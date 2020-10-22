@@ -4,6 +4,7 @@ import { AiOutlineHome }    from "react-icons/ai"
 import { ImNewspaper }      from "react-icons/im"
 import { BsPeopleFill }     from "react-icons/bs"
 import { CgFileDocument }   from "react-icons/cg"
+import { BiPowerOff }       from "react-icons/bi"
 import logo                 from "./capable_logo.png";
 import "./bootstrap.min.css";
 import "./styles.css";
@@ -39,6 +40,9 @@ export default class Navbar extends React.Component {
                         </NavLink>
                     </li>
                 </ul>
+                <NavLink className="log" to="">
+                    <div className="logout"><BiPowerOff className="menu-icon"/> Log out</div>
+                </NavLink>
             </nav>
         );
     }

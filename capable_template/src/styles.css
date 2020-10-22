@@ -52,6 +52,30 @@ h1 {
   text-align: left;
 }
 
+.log {
+  position: absolute;
+  bottom: 0px;
+}
+
+.logout {
+  color: #fff;
+  width: 200px;
+  padding-left: 20px;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  margin-right: 10px;
+  height: 3rem;
+  -webkit-transition: all ease 0.8s;
+	-moz-transition: all ease 0.8s;
+	transition: all ease 0.8s;
+}
+
+.logout:hover {
+  box-shadow: inset 220px 0.1px 1px 0px #1764e8;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
 .link-color {
   color: #fff;
   padding-left: 20px;

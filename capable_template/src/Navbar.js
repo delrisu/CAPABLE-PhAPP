@@ -31,7 +31,7 @@ export default class Navbar extends React.Component {
                     </li>
                     <li className="nav-item">
                         <NavLink className="nav-link-non-active" activeClassName="nav-link-active" to="/Patients">
-                            <div className="link-color"><BsPeopleFill className="menu-icon"/> Patients</div>
+                            <div className="link-color"><BsPeopleFill className="menu-icon"/> My Patients</div>
                         </NavLink>
                     </li>
                     <li className="nav-item">

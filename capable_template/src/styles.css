@@ -167,7 +167,7 @@ h1 {
 .content-whiteboard {
   background-color: #ffffffda;
   border-radius: 5px;
-  box-shadow: 0 0 15px #ffffffda;
+  box-shadow: 0 0 6px #ffffffda;
   height: 91%;
   width: 100%;
   margin-top: 40px;
@@ -190,4 +190,14 @@ h1 {
   float: right;
   width: 50%;
   text-align: right;
+}
+
+.column {
+  width: 12rem;
+  padding-left: 0.5rem;
+}
+
+.dialog-row {
+  padding-top: 1rem;
+  display: flex;
 }

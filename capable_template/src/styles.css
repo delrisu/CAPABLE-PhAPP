@@ -201,3 +201,10 @@ h1 {
   padding-top: 1rem;
   display: flex;
 }
+
+.form-controller {
+  margin-left: 5rem;
+  margin-right: 5rem;
+  width: 80%;
+  height: 90%;
+}

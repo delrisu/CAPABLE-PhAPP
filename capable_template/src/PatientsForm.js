@@ -11,9 +11,9 @@ class PatientsForm extends Component {
             f_name: '',
             s_name: '',
             born: '',
-            weight: '',
-            height: '',
-            bmi: '',
+            weight: 0,
+            height: 0,
+            bmi: 0,
             years_smoking: '',
             years_drinking: '',
             prev_surgery: '',
@@ -35,17 +35,32 @@ class PatientsForm extends Component {
             additional_info: ''
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangeBMI = this.handleChangeBMI.bind(this);
+        this.handleBMI = this.handleBMI.bind(this);
     }
 
     handleChange (event) {
         this.setState({ [event.target.name]: event.target.value });
         console.log(event.target.value);
     }
+
+    handleBMI () {
+        (this.state.weight !== 0 && this.state.height !== 0) ? this.setState({bmi: this.state.weight/Math.pow(this.state.height/100,2)}) : this.setState({bmi: 0})
+        console.log(this.state.bmi)
+    }
+
+    handleChangeBMI (event) {
+        this.setState({ [event.target.name]: event.target.value},() => {
+            //console.log(event.target.value);
+            this.handleBMI();
+        });
+
+    }
   
     render() {
         return (
             <form>
-            <Carousel pause='hover'>
+            <Carousel interval={null} wrap={false}>
                 <Carousel.Item>
                 <div className="form-controller">
                         <div className="form-row">
@@ -82,16 +97,16 @@ class PatientsForm extends Component {
                                 <label for="height">Height [cm]</label>
                                 <input type="number" 
                                         name="height" 
-                                        onChange={this.handleChange}
+                                        onChange={this.handleChangeBMI}
                                         id="height"
                                         className="form-control"
                                 />
                             </div>
                             <div className="form-group col-md-2">
                                 <label for="weight">Weight [kg]</label>
-                                <input type="number" 
+                                <input type="number"
                                         name="weight" 
-                                        onChange={this.handleChange}
+                                        onChange={this.handleChangeBMI}
                                         id="weight"
                                         className="form-control"
                                 />
@@ -100,7 +115,7 @@ class PatientsForm extends Component {
                                 <label for="bmi">BMI</label>
                                 <input type="number" 
                                         name="bmi" 
-                                        onChange={this.handleChange}
+                                        value={this.state.bmi}
                                         id="bmi"
                                         className="form-control"
                                         disabled
@@ -304,7 +319,7 @@ class PatientsForm extends Component {
                                         name="additional_info" 
                                         onChange={this.handleChange}
                                         id="additional_info"
-                                        className="form-control"
+                                        className="form-control textarea"
                                     ></textarea>
                             </div>
                         </div>   

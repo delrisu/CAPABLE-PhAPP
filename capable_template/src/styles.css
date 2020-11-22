@@ -7,6 +7,10 @@
   background-color: rgb(6, 0, 39);
 }
 
+.form-control.textarea {
+  resize: none;
+}
+
 .nav-logo {
   width: 200px;
   height: auto;

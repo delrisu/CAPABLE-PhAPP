@@ -11,18 +11,15 @@ class PatientsForm extends Component {
             f_name: '',
             s_name: '',
             born: '',
+            gender: '',
             weight: 0,
             height: 0,
             bmi: 0,
             years_smoking: '',
             years_drinking: '',
-            prev_surgery: '',
-            prev_diseases: '',
             therapy: '',
             other_treatments: '',
             sleep_problems: 'False',
-            email: '',
-            phone_number: '',
             diabetes: 'False',
             hypertension: 'False',
             collagen_vascular: 'False',
@@ -30,8 +27,6 @@ class PatientsForm extends Component {
             prev_intestial_surgery: 'False',
             phys_activity: 'None',
             diet: '',
-            cg_email: '',
-            cg_phone_number: '',
             additional_info: ''
         };
         this.handleChange = this.handleChange.bind(this);
@@ -45,7 +40,7 @@ class PatientsForm extends Component {
     }
 
     handleBMI () {
-        (this.state.weight !== 0 && this.state.height !== 0) ? this.setState({bmi: this.state.weight/Math.pow(this.state.height/100,2)}) : this.setState({bmi: 0})
+        (this.state.weight !== 0 && this.state.height !== 0) ? this.setState({bmi: parseFloat(this.state.weight/Math.pow(this.state.height/100,2)).toFixed(2)}) : this.setState({bmi: 0})
         console.log(this.state.bmi)
     }
 
@@ -62,9 +57,10 @@ class PatientsForm extends Component {
             <form>
             <Carousel interval={null} wrap={false}>
                 <Carousel.Item>
-                <div className="form-controller">
+                    <div className="form-controller">
+                        <div className="form-row" id="section-label">Personal data</div>
                         <div className="form-row">
-                            <div className="form-group col-md-4">
+                            <div className="form-group col-md-3">
                                 <label for="f_name">First name</label>
                                 <input type="text" 
                                         name="f_name" 
@@ -73,7 +69,7 @@ class PatientsForm extends Component {
                                         className="form-control"
                                 />
                             </div>
-                            <div className="form-group col-md-4">
+                            <div className="form-group col-md-3">
                                 <label for="s_name">Last name</label>
                                 <input type="text" 
                                         name="s_name" 
@@ -82,7 +78,7 @@ class PatientsForm extends Component {
                                         className="form-control"
                                 />
                             </div>
-                            <div className="form-group col-md-4">
+                            <div className="form-group col-md-3">
                                 <label for="born">Date of birth</label>
                                 <input type="date" 
                                         name="born" 
@@ -90,6 +86,17 @@ class PatientsForm extends Component {
                                         id="born"
                                         className="form-control"
                                 />
+                            </div>
+                            <div className="form-group col-md-3">
+                                <label for="gender">Gender</label>
+                                <select name="gender" 
+                                        onChange={this.handleChange}
+                                        id="gender"
+                                        className="form-control">
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
                             </div>
                         </div>
                         <div className="form-row">
@@ -121,45 +128,12 @@ class PatientsForm extends Component {
                                         disabled
                                 />
                             </div>
-                            <div className="form-group col-md-3">
-                                <label for="years_smoking">Years as a smoker</label>
-                                <input type="number" 
-                                        name="years_smoking" 
-                                        onChange={this.handleChange}
-                                        id="years_smoking"
-                                        className="form-control"
-                                    />
-                            </div>
-                            <div className="form-group col-md-3">
-                                <label for="years_drinking">Years as a drinker</label>
-                                <input type="number"
-                                        name="years_drinking" 
-                                        onChange={this.handleChange}
-                                        id="years_drinking"
-                                        className="form-control"
-                                />
-                            </div>
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group col-md-6">
-                                <label for="prev_diseases">Previous diseases</label>
-                                <input type="text" 
-                                        name="prev_diseases" 
-                                        onChange={this.handleChange}
-                                        id="prev_diseases"
-                                        className="form-control"
-                                    />
-                            </div>
-                            <div className="form-group col-md-6">
-                                <label for="prev_surgery">Previous surgery</label>
-                                <input type="text" 
-                                        name="prev_surgery" 
-                                        onChange={this.handleChange}
-                                        id="prev_surgery"
-                                        className="form-control"
-                                    />
-                            </div>
-                        </div>
+                        </div>                 
+                    </div>
+                </Carousel.Item>
+                <Carousel.Item>
+                    <div className="form-controller">
+                    <   div className="form-row" id="section-label">Medical data</div>
                         <div className="form-row">
                             <div className="form-group col-md-6">
                             <label for="therapy">Therapy</label>
@@ -181,48 +155,15 @@ class PatientsForm extends Component {
                             </div>
                         </div>
                         <div className="form-row">
-                            <div className="form-group col-md-6">
-                            <label for="email">E-mail</label>
-                                <input type="text"
-                                        name="email" 
-                                        onChange={this.handleChange}
-                                        id="email"
-                                        className="form-control"
-                                    />
-                            </div>
-                            <div className="form-group col-md-6">
-                            <label for="phone_number">Phone number</label>
-                                <input type="text"
-                                        name="phone_number" 
-                                        onChange={this.handleChange}
-                                        id="phone_number"
-                                        className="form-control"
-                                    />
-                            </div>
-                        </div>                   
-                    </div>
-                </Carousel.Item>
-                <Carousel.Item>
-                <div className="form-controller">
-                        <div className="form-row">
-                            <div className="form-group col-md-4">
-                                <label for="sleep_problems">Sleeping problems</label>
-                                <select name="sleep_problems" 
-                                        onChange={this.handleChange}
-                                        id="sleep_problems"
-                                        className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
-                                </select>
-                            </div>
                             <div className="form-group col-md-4">
                                 <label for="diabetes">Diabetes</label>
                                 <select name="diabetes" 
                                         onChange={this.handleChange}
                                         id="diabetes"
                                         className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -231,30 +172,33 @@ class PatientsForm extends Component {
                                         onChange={this.handleChange}
                                         id="hypertension"
                                         className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
                                 </select>
                             </div>
-                        </div>
-                        <div className="form-row">
                             <div className="form-group col-md-4">
                                 <label for="collagen_vascular">Collagen vascular</label>
                                 <select name="collagen_vascular" 
                                         onChange={this.handleChange}
                                         id="collagen_vascular"
                                         className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
                                 </select>
                             </div>
+                        </div>
+                        <div className="form-row">
                             <div className="form-group col-md-4">
                                 <label for="ibd">IBD</label>
                                 <select name="ibd" 
                                         onChange={this.handleChange}
                                         id="ibd"
                                         className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -263,26 +207,39 @@ class PatientsForm extends Component {
                                         onChange={this.handleChange}
                                         id="prev_intestial_surgery"
                                         className="form-control">
-                                    <option>False</option>
-                                    <option>True</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
                                 </select>
                             </div>
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group col-md-6">
+                            <div className="form-group col-md-4">
                                 <label for="phys_activity">Physical activity</label>
                                 <select name="phys_activity" 
                                         onChange={this.handleChange}
                                         id="phys_activity"
                                         className="form-control">
-                                    <option>None</option>
-                                    <option>More than 3 times a week</option>
-                                    <option>1-3 times a week</option>
-                                    <option>1-2 times per 2 weeks</option>
-                                    <option>Once a month</option>
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="none">None</option>
+                                    <option value="3xpw">More than 3 times a week</option>
+                                    <option value="1t3xpw">1-3 times a week</option>
+                                    <option value="1t2xp2w">1-2 times per 2 weeks</option>
+                                    <option value="1xpm">Once a month</option>
                                 </select>
                             </div>
-                            <div className="form-group col-md-6">
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group col-md-3">
+                                <label for="sleep_problems">Sleeping problems</label>
+                                <select name="sleep_problems" 
+                                        onChange={this.handleChange}
+                                        id="sleep_problems"
+                                        className="form-control">
+                                    <option value="" selected disabled hidden>Choose...</option>
+                                    <option value="false">False</option>
+                                    <option value="true">True</option>
+                                </select>
+                            </div>
+                            <div className="form-group col-md-3">
                                 <label for="diet">Diet</label>
                                 <input type="text" 
                                         name="diet" 
@@ -291,25 +248,23 @@ class PatientsForm extends Component {
                                         className="form-control"
                                     />
                             </div>
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group col-md-6">
-                            <label for="cg_email">Caregiver's e-mail</label>
-                                <input type="text" 
-                                        name="cg_email" 
+                            <div className="form-group col-md-3">
+                                <label for="years_smoking">Years as a smoker</label>
+                                <input type="number" 
+                                        name="years_smoking" 
                                         onChange={this.handleChange}
-                                        id="cg_email"
+                                        id="years_smoking"
                                         className="form-control"
                                     />
                             </div>
-                            <div className="form-group col-md-6">
-                            <label for="cg_phone_number">Caregiver's phone number</label>
-                                <input type="text" 
-                                        name="cg_phone_number" 
+                            <div className="form-group col-md-3">
+                                <label for="years_drinking">Years as a drinker</label>
+                                <input type="number"
+                                        name="years_drinking" 
                                         onChange={this.handleChange}
-                                        id="cg_phone_number"
+                                        id="years_drinking"
                                         className="form-control"
-                                    />
+                                />
                             </div>
                         </div>
                         <div className="form-row">

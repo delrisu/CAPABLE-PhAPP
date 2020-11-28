@@ -44,7 +44,7 @@ export default function Patients() {
                     </div>
                     <div className="patients-top-bar-right">
                         <Button color="primary" onClick={() => setModalShow(true)}>
-                            + Add new patient
+                            + Add a new patient
                         </Button>
                     </div>
                 </div>

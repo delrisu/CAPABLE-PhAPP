@@ -101,7 +101,7 @@ h1 {
   box-shadow: inset 220px 0.1px 1px 0px #1764e8;
   border-top-right-radius: 25px;
   border-bottom-right-radius: 25px;
-  border: solid 1px #fff;
+  /* border: solid 1px #fff; */
 }
 
 .nav-link-non-active {
@@ -211,4 +211,9 @@ h1 {
   margin-right: 5rem;
   width: 80%;
   height: 90%;
+}
+
+#section-label {
+  font-size: 2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }

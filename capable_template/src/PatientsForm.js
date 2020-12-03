@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
+import Modal        from 'react-bootstrap/Modal'
+import { Button }   from 'reactstrap';
 import "./bootstrap.min.css";
 import "./styles.css";
 
 class PatientsForm extends Component {
-    
+
     constructor () {
         super();
         this.state = {
@@ -52,8 +54,21 @@ class PatientsForm extends Component {
 
     }
   
+
     render() {
         return (
+            <Modal
+                {...this.props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter">
+                Adding a new patient ...
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
             <form>
             <Carousel interval={null} wrap={false}>
                 <Carousel.Item>
@@ -281,11 +296,15 @@ class PatientsForm extends Component {
                     </div>
                 </Carousel.Item>
             </Carousel>
-            </form>  
-      );
-  }
-
+            </form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={this.props.onHide}>Add</Button>
+                <Button onClick={this.props.onHide}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+        )
+    }
 }
-
 
 export default PatientsForm;

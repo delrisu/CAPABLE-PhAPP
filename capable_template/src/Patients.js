@@ -33,6 +33,20 @@ function MyVerticallyCenteredModal(props) {
 export default function Patients() {
 
     const [modalShow, setModalShow] = React.useState(false);
+    
+        const { FHIRClient } = require('fhir-crud-client');
+
+    const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
+    const HEADERS = {
+      Accept: 'application/json',
+    };
+ 
+    const client = new FHIRClient(BASE_URL, HEADERS);
+    
+    client.read({ resourceType: 'Patient', id: '1/_history/1' })
+      .then((resource) => {
+      console.log(resource);
+    });
 
     return (
         <div className="content-main">

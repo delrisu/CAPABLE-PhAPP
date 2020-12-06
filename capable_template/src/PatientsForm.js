@@ -76,7 +76,7 @@ class PatientsForm extends Component {
                         <div className="form-row" id="section-label">Personal data</div>
                         <div className="form-row">
                             <div className="form-group col-md-3">
-                                <label for="f_name">First name</label>
+                                <label htmlFor="f_name">First name</label>
                                 <input type="text" 
                                         name="f_name" 
                                         onChange={this.handleChange}
@@ -85,7 +85,7 @@ class PatientsForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="s_name">Last name</label>
+                                <label htmlFor="s_name">Last name</label>
                                 <input type="text" 
                                         name="s_name" 
                                         onChange={this.handleChange}
@@ -94,7 +94,7 @@ class PatientsForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="born">Date of birth</label>
+                                <label htmlFor="born">Date of birth</label>
                                 <input type="date" 
                                         name="born" 
                                         onChange={this.handleChange}
@@ -103,7 +103,7 @@ class PatientsForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="gender">Gender</label>
+                                <label htmlFor="gender">Gender</label>
                                 <select name="gender" 
                                         onChange={this.handleChange}
                                         id="gender"
@@ -116,7 +116,7 @@ class PatientsForm extends Component {
                         </div>
                         <div className="form-row">
                             <div className="form-group col-md-2">
-                                <label for="height">Height [cm]</label>
+                                <label htmlFor="height">Height [cm]</label>
                                 <input type="number" 
                                         name="height" 
                                         onChange={this.handleChangeBMI}
@@ -125,7 +125,7 @@ class PatientsForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-2">
-                                <label for="weight">Weight [kg]</label>
+                                <label htmlFor="weight">Weight [kg]</label>
                                 <input type="number"
                                         name="weight" 
                                         onChange={this.handleChangeBMI}
@@ -134,7 +134,7 @@ class PatientsForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-2">
-                                <label for="bmi">BMI</label>
+                                <label htmlFor="bmi">BMI</label>
                                 <input type="number" 
                                         name="bmi" 
                                         value={this.state.bmi}
@@ -151,7 +151,7 @@ class PatientsForm extends Component {
                     <   div className="form-row" id="section-label">Medical data</div>
                         <div className="form-row">
                             <div className="form-group col-md-6">
-                            <label for="therapy">Therapy</label>
+                            <label htmlFor="therapy">Therapy</label>
                                 <input type="text" 
                                         name="therapy" 
                                         onChange={this.handleChange}
@@ -160,7 +160,7 @@ class PatientsForm extends Component {
                                     />
                             </div>
                             <div className="form-group col-md-6">
-                            <label for="other_treatments">Other treatments</label>
+                            <label htmlFor="other_treatments">Other treatments</label>
                                 <input type="text" 
                                         name="other_treatments" 
                                         onChange={this.handleChange}
@@ -171,7 +171,7 @@ class PatientsForm extends Component {
                         </div>
                         <div className="form-row">
                             <div className="form-group col-md-4">
-                                <label for="diabetes">Diabetes</label>
+                                <label htmlFor="diabetes">Diabetes</label>
                                 <select name="diabetes" 
                                         onChange={this.handleChange}
                                         id="diabetes"
@@ -182,7 +182,7 @@ class PatientsForm extends Component {
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
-                                <label for="hypertension">Hypertension</label>
+                                <label htmlFor="hypertension">Hypertension</label>
                                 <select name="hypertension" 
                                         onChange={this.handleChange}
                                         id="hypertension"
@@ -193,7 +193,7 @@ class PatientsForm extends Component {
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
-                                <label for="collagen_vascular">Collagen vascular</label>
+                                <label htmlFor="collagen_vascular">Collagen vascular</label>
                                 <select name="collagen_vascular" 
                                         onChange={this.handleChange}
                                         id="collagen_vascular"
@@ -206,7 +206,7 @@ class PatientsForm extends Component {
                         </div>
                         <div className="form-row">
                             <div className="form-group col-md-4">
-                                <label for="ibd">IBD</label>
+                                <label htmlFor="ibd">IBD</label>
                                 <select name="ibd" 
                                         onChange={this.handleChange}
                                         id="ibd"
@@ -217,7 +217,7 @@ class PatientsForm extends Component {
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
-                                <label for="prev_intestial_surgery">Previous intestial surgery</label>
+                                <label htmlFor="prev_intestial_surgery">Previous intestial surgery</label>
                                 <select name="prev_intestial_surgery" 
                                         onChange={this.handleChange}
                                         id="prev_intestial_surgery"
@@ -228,7 +228,7 @@ class PatientsForm extends Component {
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
-                                <label for="phys_activity">Physical activity</label>
+                                <label htmlFor="phys_activity">Physical activity</label>
                                 <select name="phys_activity" 
                                         onChange={this.handleChange}
                                         id="phys_activity"
@@ -244,7 +244,7 @@ class PatientsForm extends Component {
                         </div>
                         <div className="form-row">
                             <div className="form-group col-md-3">
-                                <label for="sleep_problems">Sleeping problems</label>
+                                <label htmlFor="sleep_problems">Sleeping problems</label>
                                 <select name="sleep_problems" 
                                         onChange={this.handleChange}
                                         id="sleep_problems"
@@ -255,7 +255,7 @@ class PatientsForm extends Component {
                                 </select>
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="diet">Diet</label>
+                                <label htmlFor="diet">Diet</label>
                                 <input type="text" 
                                         name="diet" 
                                         onChange={this.handleChange}
@@ -264,7 +264,7 @@ class PatientsForm extends Component {
                                     />
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="years_smoking">Years as a smoker</label>
+                                <label htmlFor="years_smoking">Years as a smoker</label>
                                 <input type="number" 
                                         name="years_smoking" 
                                         onChange={this.handleChange}
@@ -273,7 +273,7 @@ class PatientsForm extends Component {
                                     />
                             </div>
                             <div className="form-group col-md-3">
-                                <label for="years_drinking">Years as a drinker</label>
+                                <label htmlFor="years_drinking">Years as a drinker</label>
                                 <input type="number"
                                         name="years_drinking" 
                                         onChange={this.handleChange}
@@ -284,7 +284,7 @@ class PatientsForm extends Component {
                         </div>
                         <div className="form-row">
                             <div className="form-group col-md-12">
-                            <label for="additional_info">Additional info</label>
+                            <label htmlFor="additional_info">Additional info</label>
                                 <textarea
                                         name="additional_info" 
                                         onChange={this.handleChange}

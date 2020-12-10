@@ -4,16 +4,16 @@ import "./styles.css";
 import "./bootstrap.min.css";
 import PatientsModal from './PatientsModal';
 
-function getData() {
+function getData(client) {
 
-    const { FHIRClient } = require('fhir-crud-client');
+    // const { FHIRClient } = require('fhir-crud-client');
 
-    const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
-    const HEADERS = {
-      Accept: 'application/json',
-    };
+    // const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
+    // const HEADERS = {
+    //   Accept: 'application/json',
+    // };
  
-    const client = new FHIRClient(BASE_URL, HEADERS);
+    // const client = new FHIRClient(BASE_URL, HEADERS);
     
     let patients = [];
     let patientCount;
@@ -60,6 +60,10 @@ function getData() {
             return patients;
     }
 
+    // editPatientsData = (event, rowData) => {
+
+    // }
+
     const columns = [
         {
             title: "ID",
@@ -95,8 +99,17 @@ function getData() {
         }
       ]
     
+    const { FHIRClient } = require('fhir-crud-client');
 
-    const patientsData = getData();
+    const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
+    const HEADERS = {
+            Accept: 'application/json',
+        };
+   
+    const client = new FHIRClient(BASE_URL, HEADERS);
+
+    const patientsData = getData(client);
+
 
 export default function Patients() {
         return (
@@ -112,9 +125,9 @@ export default function Patients() {
                             {
                                 icon: 'edit',
                                 tooltip: 'Edit patient\'s data',
-                                onClick: (event, rowData) => {
-
-                                }
+                                // onClick: (event, rowData) => {
+                                //     editPatientsData();
+                                // }
                             }
                         ]}
                     />

@@ -4,7 +4,7 @@ import PatientsForm from './PatientsForm';
 import "./styles.css";
 import "./bootstrap.min.css";
 
-export default function PatientsModal() {
+export default function PatientsModal({client}) {
 
     const [modalShow, setModalShow] = React.useState(false);
 
@@ -23,6 +23,7 @@ export default function PatientsModal() {
                  <PatientsForm
                      show={modalShow}
                      onHide={() => setModalShow(false)}
+                     client={client}
                  />
         </div>
     )

@@ -10,30 +10,52 @@ class PatientsForm extends Component {
     constructor () {
         super();
         this.state = {
-            f_name: '',
-            s_name: '',
-            born: '',
-            gender: '',
+            f_name: "",
+            s_name: "",
+            born: "",
+            gender: "",
             weight: 0,
             height: 0,
             bmi: 0,
-            years_smoking: '',
-            years_drinking: '',
-            therapy: '',
-            other_treatments: '',
-            sleep_problems: 'False',
-            diabetes: 'False',
-            hypertension: 'False',
-            collagen_vascular: 'False',
-            ibd: 'False',
-            prev_intestial_surgery: 'False',
+            years_smoking: "",
+            years_drinking: "",
+            therapy: "",
+            other_treatments: "",
+            sleep_problems: 0,
+            diabetes: 0,
+            hypertension: 0,
+            collagen_vascular: 0,
+            ibd: 0,
+            prev_intestial_surgery: 0,
             phys_activity: 'None',
-            diet: '',
-            additional_info: ''
+            diet: "",
+            additional_info: ""
         };
+        this.codes = {
+            weight:             27113001,
+            height:             50373000,
+            bmi:                60621009,
+            smoker:             77176002,
+            drinker:            219006,
+            dyssomnia:          44186003,
+            diabetes_mellitus:  73211009,
+            hypertension:       38341003,
+            collagen_vascular:  398049005,
+            ibd:                24526004,
+            physical_activity:  68130003,
+            gastro_operation:   386621005,
+            diet:               230125005,
+            cm:                 258672001,
+            kg:                 258672001,
+            years:              258707000,
+            per_week:           259038000
+        }
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeBMI = this.handleChangeBMI.bind(this);
         this.handleBMI = this.handleBMI.bind(this);
+        this.addNewPatient = this.addNewPatient.bind(this);
+        this.createObservation = this.createObservation.bind(this);
+        this.addNewPatient = this.addNewPatient.bind(this);
     }
 
     handleChange (event) {
@@ -51,17 +73,108 @@ class PatientsForm extends Component {
             //console.log(event.target.value);
             this.handleBMI();
         });
+    }
 
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+    createObservation(obsCode, obsTypeVal, patientId, valCode, obsDisplay, valueUnit) {
+        if (valCode === 0) {
+            return {
+                resourceType: "Observation",
+                status: "final",
+                code: {
+                    coding: [{
+                        system: "http://snomed.info/sct",
+                        code: obsCode,
+                        display: obsDisplay
+                    } ]
+                },
+                subject: {
+                    reference: "Patient/" + patientId
+                },
+                valueQuantity: {
+                    value: obsTypeVal
+                }
+            }
+        }
+        else {
+            return {
+                resourceType: "Observation",
+                status: "final",
+                code: {
+                    coding: [{
+                        system: "http://snomed.info/sct",
+                        code: obsCode,
+                        display: obsDisplay
+                    } ]
+                },
+                subject: {
+                    reference: "Patient/" + patientId
+                },
+                valueQuantity: {
+                    value: obsTypeVal,
+                    unit: valueUnit,
+                    system: "http://snomed.info/sct",
+                    code: obsCode
+                }
+            }
+        }
+    }
+
+    addNewPatient () {
+        let entry = {
+                resourceType: "Patient",
+                name: [ 
+                    {
+                        family: this.state.s_name,
+                        given: [
+                            this.state.f_name
+                        ]
+                    }],
+                gender: this.state.gender,
+                birthDate: this.state.born
+        }
+        console.log(this.props.client)
+        this.props.client.create({resourceType: "Patient", body: entry})
+                .then((resource) => {
+                    console.log(resource)
+                    let entryObs = this.createObservation(this.codes.height, this.state.height, resource.id, this.codes.cm, "Body height measure", "Centimeter");
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // height
+                    entryObs = this.createObservation(this.codes.weight, this.state.weight, resource.id, this.codes.kg, "Body weight", "Kg");
+                    this.props.client.create({resourceType: "Observation", body: entryObs});// weight
+                    entryObs = this.createObservation(this.codes.bmi, this.state.bmi, resource.id, 0, "Body mass index", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // bmi
+                    entryObs = this.createObservation(this.codes.smoker, this.state.years_smoking, resource.id, this.codes.years, "Smoker", "years");
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // smoker
+                    entryObs = this.createObservation(this.codes.drinker, this.state.years_drinking, resource.id, this.codes.years, "Drinker", "years");
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // drinker
+                    entryObs = this.createObservation(this.codes.dyssomnia, this.state.sleep_problems, resource.id, 0, "Dyssomnia", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // dyssomnia
+                    entryObs = this.createObservation(this.codes.diabetes_mellitus, this.state.diabetes, resource.id, 0, "Diabetes mellitus", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // diabetes mellitus
+                    entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, resource.id, 0, "Hypertensive disorder", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // hypertension
+                    entryObs = this.createObservation(this.codes.collagen_vascular, this.state.collagen_vascular, resource.id, 0, "Collagen vascular", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // collagen vascular
+                    entryObs = this.createObservation(this.codes.ibd, this.state.ibd, resource.id, 0, "Inflammatory bowel disease", null);
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // ibd
+                    entryObs = this.createObservation(this.codes.physical_activity, this.state.phys_activity, resource.id, this.codes.per_week, "Physical activity", "per week");
+                    this.props.client.create({resourceType: "Observation", body: entryObs}); // physical activity
+                })
     }
   
 
     render() {
         return (
             <Modal
-                {...this.props}
+                //{...this.props}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
+                show={this.props.show}
+                onHide={this.props.onHide}
             >
             <Modal.Header closeButton>
               <Modal.Title id="contained-modal-title-vcenter">
@@ -177,8 +290,8 @@ class PatientsForm extends Component {
                                         id="diabetes"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -188,8 +301,8 @@ class PatientsForm extends Component {
                                         id="hypertension"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -199,8 +312,8 @@ class PatientsForm extends Component {
                                         id="collagen_vascular"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                         </div>
@@ -212,8 +325,8 @@ class PatientsForm extends Component {
                                         id="ibd"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -223,8 +336,8 @@ class PatientsForm extends Component {
                                         id="prev_intestial_surgery"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-4">
@@ -234,11 +347,11 @@ class PatientsForm extends Component {
                                         id="phys_activity"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="none">None</option>
-                                    <option value="3xpw">More than 3 times a week</option>
-                                    <option value="1t3xpw">1-3 times a week</option>
-                                    <option value="1t2xp2w">1-2 times per 2 weeks</option>
-                                    <option value="1xpm">Once a month</option>
+                                    <option value={0}>Practically none</option>
+                                    <option value={0.5}>On average once per 2 weeks</option>
+                                    <option value={1}>On average once a week</option>
+                                    <option value={2}>On average twice a week</option>
+                                    <option value={3}>At least 3 times a week</option>
                                 </select>
                             </div>
                         </div>
@@ -250,8 +363,8 @@ class PatientsForm extends Component {
                                         id="sleep_problems"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value="false">False</option>
-                                    <option value="true">True</option>
+                                    <option value={0}>False</option>
+                                    <option value={1}>True</option>
                                 </select>
                             </div>
                             <div className="form-group col-md-3">
@@ -299,7 +412,7 @@ class PatientsForm extends Component {
             </form>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={this.props.onHide}>Add</Button>
+                <Button onClick={this.addNewPatient}>Add</Button>
                 <Button onClick={this.props.onHide}>Close</Button>
             </Modal.Footer>
           </Modal>

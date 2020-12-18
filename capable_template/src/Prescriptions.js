@@ -104,7 +104,7 @@ export default function Prescriptions({client, data, show, onHide}) {
                                 tooltip: 'Add prescription',
                                 isFreeAction: true,
                                 onClick: (event, rowData) => {
-
+                                    setPrescNewShow(true);
                                 }
                             },
                             {
@@ -118,7 +118,7 @@ export default function Prescriptions({client, data, show, onHide}) {
                                 icon: 'edit',
                                 tooltip: 'Edit prescription',
                                 onClick: (event, rowData) => {
-                                    setPrescEditShow();
+                                    setPrescEditShow(true);
                                     setPrescFormEditData(rowData);
                                 }
                             }

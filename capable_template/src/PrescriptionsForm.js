@@ -11,7 +11,7 @@ class PrescriptionForm extends Component {
         if (this.props.data === false) {
             this.state = {
                 id:             '',
-                patient:        '', //this.props.data
+                patient:        this.props.patient, //this.props.data
                 medicine:       '',
                 medicineCode:   '',
                 from:           '',
@@ -52,6 +52,16 @@ class PrescriptionForm extends Component {
             budesonide:     395726003,
             st_johns_wort:  412515006
         }
+        this.codesRev = {
+            258684004:  "mg",
+            387494007:  "Codeine",
+            373529000:  "Morphine",
+            704191007:  "Nivolumab",
+            421192001:  "Sunitinib",
+            387040009:  "Loperamide",
+            395726003:  "Budesonide",
+            412515006:  "St John's Wort"
+        }
         this.handleChange = this.handleChange.bind(this);
         this.addNewPrescription = this.addNewPrescription.bind(this);
         this.updatePrescription = this.updatePrescription.bind(this);
@@ -62,7 +72,40 @@ class PrescriptionForm extends Component {
         console.log(event.target.value);
     }
 
-    async addNewPrescription (medCode, medDisplay) {
+    async addNewPrescription () {
+        let tmpStr = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit
+        let timeStamp = Date.now();
+        // this.setState({dosing: tmpStr})
+        // this.state.dosing = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit;
+        this.state.dosing = tmpStr;
+        console.log("Dosing:")
+        console.log(this.state.dosing)
+        switch(this.state.medicine) {
+            case "Nivolumab":
+                this.state.medicineCode = this.codes.nivolumab;
+                break;
+            case "Codeine":
+                this.state.medicineCode = this.codes.codeine;
+                break;
+            case "Morphine":
+                this.state.medicineCode = this.codes.morphine;
+                break;
+            case "Sunitinib":
+                this.state.medicineCode = this.codes.sunitinib;
+                break;
+            case "Loperamide":
+                this.state.medicineCode = this.codes.loperamide;
+                break;
+            case "Budesonide":
+                this.state.medicineCode = this.codes.budesonide;
+                break;
+            case "St John's Wort":
+                this.state.medicineCode = this.codes.st_johns_wort;
+                break;
+            default:
+                break;
+        }
+        
         let entry = {
                 resourceType: "MedicationRequest",
                 status: "active",
@@ -70,14 +113,14 @@ class PrescriptionForm extends Component {
                 medicationCodeableConcept: {
                     coding: [{
                         system: "http://snomed.info/sct",
-                        code: medCode,
-                        display: medDisplay
+                        code: this.state.medicineCode,
+                        display: this.state.medicine
                     }]
                 },
                 subject: {
-                    reference: this.state.patient
+                    reference: "Patient/" + this.state.patient
                 },
-                dosageIntruction: [{
+                dosageInstruction: [{
                     text: this.state.dosing,
                     timing: {
                         repeat: {
@@ -105,21 +148,13 @@ class PrescriptionForm extends Component {
         let response = await this.props.client.create({resourceType: "MedicationRequest", body: entry})
     }
 
-    async updatePrescription (medCode, medDisplay) {
+    async updatePrescription () {
+        this.state.dosing = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit;
         let entry = {
             resourceType: "MedicationRequest",
+            id: this.state.id,
             status: "active",
             intent: "order",
-            medicationCodeableConcept: {
-                coding: [{
-                    system: "http://snomed.info/sct",
-                    code: medCode,
-                    display: medDisplay
-                }]
-            },
-            subject: {
-                reference: this.state.patient
-            },
             dosageIntruction: [{
                 text: this.state.dosing,
                 timing: {
@@ -151,6 +186,10 @@ class PrescriptionForm extends Component {
     render() {
 
         if (this.props.data === false) {
+            console.log("State: " + this.state.patient)
+            console.log("Props: " + this.props.patient)
+            console.log("Full state:")
+            console.log(this.state)
             return (
                 <Modal
                     //{...this.props}
@@ -170,24 +209,24 @@ class PrescriptionForm extends Component {
                     <div className="form-controller">
                         <div className="form-row">
                             <div className="form-group col-md-3">
-                                <label htmlFor="medication">Medication</label>
-                                <select name="medication" 
+                                <label htmlFor="medicine">Medicine</label>
+                                <select name="medicine" 
                                         onChange={this.handleChange}
-                                        id="medication"
+                                        id="medicine"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
                                     <optgroup label="for cancer">
-                                        <option value="codeine">Codeine</option>
-                                        <option value="morphine">Morphine</option>
-                                        <option value="nivolumab">Nivolumab</option>
-                                        <option value="sunitinib">Sunitinib</option>
+                                        <option value="Codeine">Codeine</option>
+                                        <option value="Morphine">Morphine</option>
+                                        <option value="Nivolumab">Nivolumab</option>
+                                        <option value="Sunitinib">Sunitinib</option>
                                     </optgroup>
                                     <optgroup label="for side effects">
-                                        <option value="loperamide">Loperamide</option>
-                                        <option value="budesonide">Budesonide</option>
+                                        <option value="Loperamide">Loperamide</option>
+                                        <option value="Budesonide">Budesonide</option>
                                     </optgroup>
                                     <optgroup label="for other problems">
-                                        <option value="st john's wort">St John's Wort</option>
+                                        <option value="St John's Wort">St John's Wort</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -204,11 +243,11 @@ class PrescriptionForm extends Component {
                                 />
                             </div>
                             <div className="form-group col-md-4">
-                                <label htmlFor="end">End</label>
+                                <label htmlFor="to">End</label>
                                 <input type="date"
-                                        name="end" 
+                                        name="to" 
                                         onChange={this.handleChange}
-                                        id="end"
+                                        id="to"
                                         className="form-control"
                                 />
                             </div>
@@ -271,6 +310,7 @@ class PrescriptionForm extends Component {
                                     <option value="min">minute(s)</option>
                                     <option value="h">hour(s)</option>
                                     <option value="d">day(s)</option>
+                                    <option value="w">week(s)</option>
                                 </select>
                             </div>
                         </div>
@@ -285,6 +325,10 @@ class PrescriptionForm extends Component {
             )
         }
         else {
+            console.log("State: " + this.state.patient)
+            console.log("Props: " + this.props.patient)
+            console.log("Full state:")
+            console.log(this.state)
             return (
                 <Modal
                     size="xl"
@@ -295,7 +339,7 @@ class PrescriptionForm extends Component {
                 >
                 <Modal.Header closeButton>
                   <Modal.Title id="contained-modal-title-vcenter">
-                    Editing patient's data ...
+                    Editing a prescription ...
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -303,12 +347,12 @@ class PrescriptionForm extends Component {
                     <div className="form-controller">
                         <div className="form-row">
                             <div className="form-group col-md-4">
-                                <label htmlFor="medication">Medication</label>
-                                <select name="medication" 
+                                <label htmlFor="medicine">medicine</label>
+                                <select name="medicine" 
                                         onChange={this.handleChange}
-                                        id="medication"
+                                        id="medicine"
                                         className="form-control"
-                                        value={this.state.medication}
+                                        value={this.state.medicine}
                                         disabled>
                                     <option value="" selected disabled hidden>Choose...</option>
                                     <optgroup label="for cancer">
@@ -337,6 +381,7 @@ class PrescriptionForm extends Component {
                                         id="from"
                                         className="form-control"
                                         value={this.state.begin}
+                                        disabled
                                 />
                             </div>
                             <div className="form-group col-md-4">
@@ -414,6 +459,7 @@ class PrescriptionForm extends Component {
                                     <option value="min">minute(s)</option>
                                     <option value="h">hour(s)</option>
                                     <option value="d">day(s)</option>
+                                    <option value="w">week(s)</option>
                                 </select>
                             </div>
                         </div>

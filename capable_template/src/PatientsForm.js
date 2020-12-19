@@ -11,46 +11,44 @@ class PatientsForm extends Component {
         super(props);
         if (this.props.data === false) {
             this.state = {
-                f_name: "",
-                s_name: "",
-                born: "",
+                fname: "",
+                sname: "",
+                birthDate: "",
                 gender: "",
                 weight: 0,
                 height: 0,
                 bmi: 0,
-                years_smoking: "",
-                years_drinking: "",
-                sleep_problems: 0,
+                yearsSmoking: "",
+                yearsDrinking: "",
+                dyssomnia: 0,
                 diabetes: 0,
                 hypertension: 0,
-                collagen_vascular: 0,
+                collagenVascular: 0,
                 ibd: 0,
-                prev_intestial_surgery: 0,
-                phys_activity: 'None',
-                additional_info: "",
-                beganEdit: false
+                gastroOperation: 0,
+                physicalActivity: 'None',
+                additional_info: ""
             };
         }
         else {
             this.state = {
-                f_name: this.props.data.fname,
-                s_name: this.props.data.sname,
-                born: this.props.data.birthDate,
+                fname: this.props.data.fname,
+                sname: this.props.data.sname,
+                birthDate: this.props.data.birthDate,
                 gender: this.props.data.gender,
                 weight: this.props.data.weight,
                 height: this.props.data.height,
                 bmi: this.props.data.bmi,
-                years_smoking: this.props.data.yearsSmoking,
-                years_drinking: this.props.data.yearsDrinking,
-                sleep_problems: this.props.data.dyssomnia,
+                yearsSmoking: this.props.data.yearsSmoking,
+                yearsDrinking: this.props.data.yearsDrinking,
+                dyssomnia: this.props.data.dyssomnia,
                 diabetes: this.props.data.diabetes,
                 hypertension: this.props.data.hypertension,
-                collagen_vascular: this.props.data.collagen_vascular,
+                collagenVascular: this.props.data.collagenVascular,
                 ibd: this.props.data.ibd,
-                prev_intestial_surgery: this.props.data.gastroOperation,
-                phys_activity: this.props.data.physical_activity,
-                additional_info: "",
-                beganEdit: true
+                gastroOperation: this.props.data.gastroOperation,
+                physicalActivity: this.props.data.physicalActivity,
+                additional_info: ""
             };
         }
         this.codes = {
@@ -62,9 +60,9 @@ class PatientsForm extends Component {
             dyssomnia:          44186003,
             diabetes_mellitus:  73211009,
             hypertension:       38341003,
-            collagen_vascular:  398049005,
+            collagenVascular:  398049005,
             ibd:                24526004,
-            physical_activity:  68130003,
+            physicalActivity:  68130003,
             gastro_operation:   386621005,
             diet:               230125005,
             cm:                 258672001,
@@ -96,10 +94,6 @@ class PatientsForm extends Component {
             this.handleBMI();
         });
     }
-
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
 
     createObservation(obsCode, obsTypeVal, patientId, valCode, obsDisplay, valueUnit) {
         if (valCode === 0) {
@@ -150,13 +144,13 @@ class PatientsForm extends Component {
                 resourceType: "Patient",
                 name: [ 
                     {
-                        family: this.state.s_name,
+                        family: this.state.sname,
                         given: [
-                            this.state.f_name
+                            this.state.fname
                         ]
                     }],
                 gender: this.state.gender,
-                birthDate: this.state.born
+                birthDate: this.state.birthDate
         }
         // console.log(this.props.client)
         this.props.client.create({resourceType: "Patient", body: entry})
@@ -168,21 +162,21 @@ class PatientsForm extends Component {
                 this.props.client.create({resourceType: "Observation", body: entryObs});// weight
                 entryObs = this.createObservation(this.codes.bmi, this.state.bmi, resource.id, 0, "Body mass index", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // bmi
-                entryObs = this.createObservation(this.codes.smoker, this.state.years_smoking, resource.id, this.codes.years, "Smoker", "years");
+                entryObs = this.createObservation(this.codes.smoker, this.state.yearsSmoking, resource.id, this.codes.years, "Smoker", "years");
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // smoker
-                entryObs = this.createObservation(this.codes.drinker, this.state.years_drinking, resource.id, this.codes.years, "Drinker", "years");
+                entryObs = this.createObservation(this.codes.drinker, this.state.yearsDrinking, resource.id, this.codes.years, "Drinker", "years");
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // drinker
-                entryObs = this.createObservation(this.codes.dyssomnia, this.state.sleep_problems, resource.id, 0, "Dyssomnia", null);
+                entryObs = this.createObservation(this.codes.dyssomnia, this.state.dyssomnia, resource.id, 0, "Dyssomnia", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // dyssomnia
                 entryObs = this.createObservation(this.codes.diabetes_mellitus, this.state.diabetes, resource.id, 0, "Diabetes mellitus", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // diabetes mellitus
                 entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, resource.id, 0, "Hypertensive disorder", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // hypertension
-                entryObs = this.createObservation(this.codes.collagen_vascular, this.state.collagen_vascular, resource.id, 0, "Collagen vascular", null);
+                entryObs = this.createObservation(this.codes.collagenVascular, this.state.collagenVascular, resource.id, 0, "Collagen vascular", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // collagen vascular
                 entryObs = this.createObservation(this.codes.ibd, this.state.ibd, resource.id, 0, "Inflammatory bowel disease", null);
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // ibd
-                entryObs = this.createObservation(this.codes.physical_activity, this.state.phys_activity, resource.id, this.codes.per_week, "Physical activity", "per week");
+                entryObs = this.createObservation(this.codes.physicalActivity, this.state.physicalActivity, resource.id, this.codes.per_week, "Physical activity", "per week");
                 this.props.client.create({resourceType: "Observation", body: entryObs}); // physical activity
             }) 
     }
@@ -192,13 +186,13 @@ class PatientsForm extends Component {
             resourceType: "Patient",
             name: [ 
                 {
-                    family: this.state.s_name,
+                    family: this.state.sname,
                     given: [
-                        this.state.f_name
+                        this.state.fname
                     ]
                 }],
             gender: this.state.gender,
-            birthDate: this.state.born
+            birthDate: this.state.birthDate
         };
 
         let entryObs;
@@ -217,16 +211,16 @@ class PatientsForm extends Component {
             entryObs = this.createObservation(this.codes.bmi, this.state.bmi, this.props.data.id, 0, "Body mass index", null);
             this.props.client.update({resourceType: "Observation", id: this.props.data.bmiID, body: entryObs}); // bmi
         }
-        if (this.state.years_smoking !== this.props.data.yearsSmoking) {
-            entryObs = this.createObservation(this.codes.smoker, this.state.years_smoking, this.props.data.id, this.codes.years, "Smoker", "years");
+        if (this.state.yearsSmoking !== this.props.data.yearsSmoking) {
+            entryObs = this.createObservation(this.codes.smoker, this.state.yearsSmoking, this.props.data.id, this.codes.years, "Smoker", "years");
             this.props.client.update({resourceType: "Observation", id: this.props.data.yearsSmokingID, body: entryObs}); // smoker
         }
-        if (this.state.years_drinking !== this.props.data.yearsDrinking) {
-            entryObs = this.createObservation(this.codes.drinker, this.state.years_drinking, this.props.data.id, this.codes.years, "Drinker", "years");
+        if (this.state.yearsDrinking !== this.props.data.yearsDrinking) {
+            entryObs = this.createObservation(this.codes.drinker, this.state.yearsDrinking, this.props.data.id, this.codes.years, "Drinker", "years");
             this.props.client.update({resourceType: "Observation", id: this.props.data.yearsDrinkingID, body: entryObs}); // drinker
         }
-        if (this.state.sleep_problems !== this.props.data.dyssomnia) {
-            entryObs = this.createObservation(this.codes.dyssomnia, this.state.sleep_problems, this.props.data.id, 0, "Dyssomnia", null);
+        if (this.state.dyssomnia !== this.props.data.dyssomnia) {
+            entryObs = this.createObservation(this.codes.dyssomnia, this.state.dyssomnia, this.props.data.id, 0, "Dyssomnia", null);
             this.props.client.update({resourceType: "Observation", id: this.props.data.dyssomniaID, body: entryObs}); // dyssomnia
         }
         if (this.state.diabetes !== this.props.data.diabetes) {
@@ -237,16 +231,16 @@ class PatientsForm extends Component {
             entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, this.props.data.id, 0, "Hypertensive disorder", null);
             this.props.client.update({resourceType: "Observation", id: this.props.data.hypertensionID, body: entryObs}); // hypertension
         }
-        if (this.state.collagen_vascular !== this.props.data.collagen_vascular) {
-            entryObs = this.createObservation(this.codes.collagen_vascular, this.state.collagen_vascular, this.props.data.id, 0, "Collagen vascular", null);
+        if (this.state.collagenVascular !== this.props.data.collagenVascular) {
+            entryObs = this.createObservation(this.codes.collagenVascular, this.state.collagenVascular, this.props.data.id, 0, "Collagen vascular", null);
             this.props.client.update({resourceType: "Observation", id: this.props.data.collagen_vascularID, body: entryObs}); // collagen vascular
         }
         if (this.state.ibd !== this.props.data.ibd) {
             entryObs = this.createObservation(this.codes.ibd, this.state.ibd, this.props.data.id, 0, "Inflammatory bowel disease", null);
             this.props.client.update({resourceType: "Observation", id: this.props.data.ibdID, body: entryObs}); // ibd
         }
-        if (this.state.phys_activity !== this.props.data.physical_activity) {
-            entryObs = this.createObservation(this.codes.physical_activity, this.state.phys_activity, this.props.data.id, this.codes.per_week, "Physical activity", "per week");
+        if (this.state.physicalActivity !== this.props.data.physicalActivity) {
+            entryObs = this.createObservation(this.codes.physicalActivity, this.state.physicalActivity, this.props.data.id, this.codes.per_week, "Physical activity", "per week");
             this.props.client.update({resourceType: "Observation", id: this.props.data.physical_activityID, body: entryObs}); // physical activity
         }
     }
@@ -276,29 +270,29 @@ class PatientsForm extends Component {
                             <div className="form-row" id="section-label">Personal data</div>
                             <div className="form-row">
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="f_name">First name</label>
+                                    <label htmlFor="fname">First name</label>
                                     <input type="text" 
-                                            name="f_name" 
+                                            name="fname" 
                                             onChange={this.handleChange}
-                                            id="f_name"
+                                            id="fname"
                                             className="form-control"
                                     />
                                 </div>
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="s_name">Last name</label>
+                                    <label htmlFor="sname">Last name</label>
                                     <input type="text" 
-                                            name="s_name" 
+                                            name="sname" 
                                             onChange={this.handleChange}
-                                            id="s_name"
+                                            id="sname"
                                             className="form-control"
                                     />
                                 </div>
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="born">Date of birth</label>
+                                    <label htmlFor="birthDate">Date of birth</label>
                                     <input type="date" 
-                                            name="born" 
+                                            name="birthDate" 
                                             onChange={this.handleChange}
-                                            id="born"
+                                            id="birthDate"
                                             className="form-control"
                                     />
                                 </div>
@@ -373,10 +367,10 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="collagen_vascular">Collagen vascular</label>
-                                    <select name="collagen_vascular" 
+                                    <label htmlFor="collagenVascular">Collagen vascular</label>
+                                    <select name="collagenVascular" 
                                             onChange={this.handleChange}
-                                            id="collagen_vascular"
+                                            id="collagenVascular"
                                             className="form-control">
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
@@ -397,10 +391,10 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="prev_intestial_surgery">Previous intestial surgery</label>
-                                    <select name="prev_intestial_surgery" 
+                                    <label htmlFor="gastroOperation">Previous intestial surgery</label>
+                                    <select name="gastroOperation" 
                                             onChange={this.handleChange}
-                                            id="prev_intestial_surgery"
+                                            id="gastroOperation"
                                             className="form-control">
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
@@ -408,10 +402,10 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="phys_activity">Physical activity</label>
-                                    <select name="phys_activity" 
+                                    <label htmlFor="physicalActivity">Physical activity</label>
+                                    <select name="physicalActivity" 
                                             onChange={this.handleChange}
-                                            id="phys_activity"
+                                            id="physicalActivity"
                                             className="form-control">
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>Practically none</option>
@@ -424,10 +418,10 @@ class PatientsForm extends Component {
                             </div>
                             <div className="form-row">
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="sleep_problems">Sleeping problems</label>
-                                    <select name="sleep_problems" 
+                                    <label htmlFor="dyssomnia">Sleeping problems</label>
+                                    <select name="dyssomnia" 
                                             onChange={this.handleChange}
-                                            id="sleep_problems"
+                                            id="dyssomnia"
                                             className="form-control">
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
@@ -435,20 +429,20 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="years_smoking">Years as a smoker</label>
+                                    <label htmlFor="yearsSmoking">Years as a smoker</label>
                                     <input type="number" 
-                                            name="years_smoking" 
+                                            name="yearsSmoking" 
                                             onChange={this.handleChange}
-                                            id="years_smoking"
+                                            id="yearsSmoking"
                                             className="form-control"
                                         />
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="years_drinking">Years as a drinker</label>
+                                    <label htmlFor="yearsDrinking">Years as a drinker</label>
                                     <input type="number"
-                                            name="years_drinking" 
+                                            name="yearsDrinking" 
                                             onChange={this.handleChange}
-                                            id="years_drinking"
+                                            id="yearsDrinking"
                                             className="form-control"
                                     />
                                 </div>
@@ -498,33 +492,33 @@ class PatientsForm extends Component {
                             <div className="form-row" id="section-label">Personal data</div>
                             <div className="form-row">
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="f_name">First name</label>
+                                    <label htmlFor="fname">First name</label>
                                     <input type="text" 
-                                            name="f_name" 
+                                            name="fname" 
                                             onChange={this.handleChange}
-                                            id="f_name"
+                                            id="fname"
                                             className="form-control"
                                             value={this.props.data.fname}
                                             disabled={true}
                                     />
                                 </div>
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="s_name">Last name</label>
+                                    <label htmlFor="sname">Last name</label>
                                     <input type="text" 
-                                            name="s_name" 
+                                            name="sname" 
                                             onChange={this.handleChange}
-                                            id="s_name"
+                                            id="sname"
                                             className="form-control"
                                             value={this.props.data.sname}
                                             disabled={true}
                                     />
                                 </div>
                                 <div className="form-group col-md-3">
-                                    <label htmlFor="born">Date of birth</label>
+                                    <label htmlFor="birthDate">Date of birth</label>
                                     <input type="text" 
-                                            name="born" 
+                                            name="birthDate" 
                                             onChange={this.handleChange}
-                                            id="born"
+                                            id="birthDate"
                                             className="form-control"
                                             value={this.props.data.birthDate}
                                             disabled={true}
@@ -607,12 +601,12 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="collagen_vascular">Collagen vascular</label>
-                                    <select name="collagen_vascular" 
+                                    <label htmlFor="collagenVascular">Collagen vascular</label>
+                                    <select name="collagenVascular" 
                                             onChange={this.handleChange}
-                                            id="collagen_vascular"
+                                            id="collagenVascular"
                                             className="form-control"
-                                            value={this.state.collagen_vascular}>
+                                            value={this.state.collagenVascular}>
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
                                         <option value={1}>True</option>
@@ -633,24 +627,24 @@ class PatientsForm extends Component {
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="prev_intestial_surgery">Previous intestial surgery</label>
-                                    <select name="prev_intestial_surgery" 
+                                    <label htmlFor="gastroOperation">Previous intestial surgery</label>
+                                    <select name="gastroOperation" 
                                             onChange={this.handleChange}
-                                            id="prev_intestial_surgery"
+                                            id="gastroOperation"
                                             className="form-control"
-                                            value={this.state.prev_intestial_surgery}>
+                                            value={this.state.gastroOperation}>
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
                                         <option value={1}>True</option>
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="phys_activity">Physical activity</label>
-                                    <select name="phys_activity" 
+                                    <label htmlFor="physicalActivity">Physical activity</label>
+                                    <select name="physicalActivity" 
                                             onChange={this.handleChange}
-                                            id="phys_activity"
+                                            id="physicalActivity"
                                             className="form-control"
-                                            value={this.state.phys_activity}>
+                                            value={this.state.physicalActivity}>
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>Practically none</option>
                                         <option value={0.5}>On average once per 2 weeks</option>
@@ -662,35 +656,35 @@ class PatientsForm extends Component {
                             </div>
                             <div className="form-row">
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="sleep_problems">Sleeping problems</label>
-                                    <select name="sleep_problems" 
+                                    <label htmlFor="dyssomnia">Sleeping problems</label>
+                                    <select name="dyssomnia" 
                                             onChange={this.handleChange}
-                                            id="sleep_problems"
+                                            id="dyssomnia"
                                             className="form-control"
-                                            value={this.state.sleep_problems}>
+                                            value={this.state.dyssomnia}>
                                         <option value="" selected disabled hidden>Choose...</option>
                                         <option value={0}>False</option>
                                         <option value={1}>True</option>
                                     </select>
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="years_smoking">Years as a smoker</label>
+                                    <label htmlFor="yearsSmoking">Years as a smoker</label>
                                     <input type="number" 
-                                            name="years_smoking" 
+                                            name="yearsSmoking" 
                                             onChange={this.handleChange}
-                                            id="years_smoking"
+                                            id="yearsSmoking"
                                             className="form-control"
-                                            value={this.state.years_smoking}
+                                            value={this.state.yearsSmoking}
                                         />
                                 </div>
                                 <div className="form-group col-md-4">
-                                    <label htmlFor="years_drinking">Years as a drinker</label>
+                                    <label htmlFor="yearsDrinking">Years as a drinker</label>
                                     <input type="number"
-                                            name="years_drinking" 
+                                            name="yearsDrinking" 
                                             onChange={this.handleChange}
-                                            id="years_drinking"
+                                            id="yearsDrinking"
                                             className="form-control"
-                                            value={this.state.years_drinking}
+                                            value={this.state.yearsDrinking}
                                     />
                                 </div>
                             </div>

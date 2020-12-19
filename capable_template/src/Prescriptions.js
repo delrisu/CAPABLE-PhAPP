@@ -39,7 +39,7 @@ const columns = [
     }
 ]
 
-export default function Prescriptions({client, data, show, onHide}) {
+export default function Prescriptions({client, data, show, onHide, patientRef}) {
     const [prescEditShow, setPrescEditShow] = useState(false);
     const [prescFormEditData, setPrescFormEditData] = useState({});
     const [prescNewShow, setPrescNewShow] = useState(false);
@@ -143,6 +143,7 @@ export default function Prescriptions({client, data, show, onHide}) {
                     onHide={() => setPrescNewShow(false)}
                     client={client}
                     data={false}
+                    patient={patientRef.id}
                 />
             }
             {prescEditShow===true &&
@@ -151,6 +152,7 @@ export default function Prescriptions({client, data, show, onHide}) {
                     onHide={() => setPrescEditShow(false)}
                     client={client}
                     data={prescFormEditData}
+                    patient={patientRef.id}
                 />
             }
             {
@@ -159,52 +161,3 @@ export default function Prescriptions({client, data, show, onHide}) {
         </div>
     )
 }
-// class Receipts extends Component {
-
-//     constructor(props) {
-//         super(props);
-//         this.codes = {
-//             codeine:        387494007,
-//             morphine:       373529000,
-//             nivolumab:      704191007,
-//             sunitinib:      421192001,
-//             loperamide:     387040009,
-//             budesonide:     395726003,
-//             st_johns_wort:  412515006
-//         }
-//     }
-
-//     render() {
-//         <Modal
-//             size="lg"
-//             aria-labelledby="contained-modal-title-vcenter"
-//             centered
-//             show={this.props.show}
-//             onHide={this.props.onHide}
-//         >
-//             <Modal.Header closeButton>
-//                 <Modal.Title id="contained-modal-title-vcenter">
-//                     Prescribed medicines
-//                 </Modal.Title>
-//             </Modal.Header>
-//             <Modal.Body>
-//                 <form>
-//                     <Carousel interval={null} wrap={false}>
-//                         <Carousel.Item>
-
-//                         </Carousel.Item>
-//                         <Carousel.Item>
-
-//                         </Carousel.Item>
-//                     </Carousel>
-//                 </form>
-//             </Modal.Body>
-//             <Modal.Footer>
-//                 <Button onClick={() => {this.props.onHide()}}>Save</Button>
-//                 <Button onClick={this.props.onHide}>Close</Button>
-//             </Modal.Footer>
-//         </Modal>
-//     }
-// }
-
-// export default Receipts;

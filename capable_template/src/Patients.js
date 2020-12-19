@@ -456,7 +456,8 @@ export default function Patients() {
             <div className="content-main">
                 {console.log(patientsData)}
                 <h1><span className="badge badge-dark">Patients</span></h1>
-                <div className="content-whiteboard">
+                <div className="content-patients">
+                {/* <div className="content-whiteboard">
                     <div className="patients-top-bar">
                         <div className="patients-top-bar-left">
                         
@@ -466,12 +467,20 @@ export default function Patients() {
                                 + Add a new patient
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
                     <MaterialTable
                         columns={columns}
                         data={patientsData!== undefined ? patientsData : null}
-                        title="Patients"
+                        title=""
                         actions={[
+                            {
+                                icon: 'add',
+                                tooltip: 'Add a new patient',
+                                isFreeAction: true,
+                                onClick: (event, rowData) => {
+                                    setModalShow(true);
+                                }
+                            },
                             {
                                 icon: 'delete',
                                 tooltip: 'Remove this patient',
@@ -502,7 +511,10 @@ export default function Patients() {
                         ]}
                         options={
                             {
-                                pageSize: 10
+                                pageSize: 13
+                            },
+                            {
+                                searchFieldAlignment: 'left'
                             }
                         }
                     />

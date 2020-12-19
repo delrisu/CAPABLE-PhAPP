@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Carousel             from 'react-bootstrap/Carousel';
 import Modal                from 'react-bootstrap/Modal'
 import { Button }           from 'reactstrap';
 import "./bootstrap.min.css";

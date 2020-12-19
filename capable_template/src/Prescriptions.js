@@ -101,7 +101,7 @@ export default function Prescriptions({client, data, show, onHide}) {
                         actions={[
                             {
                                 icon: 'add',
-                                tooltip: 'Add prescription',
+                                tooltip: 'Add a new prescription',
                                 isFreeAction: true,
                                 onClick: (event, rowData) => {
                                     setPrescNewShow(true);
@@ -126,6 +126,9 @@ export default function Prescriptions({client, data, show, onHide}) {
                         options={
                             {
                                 pageSize: 5
+                            },
+                            {
+                                searchFieldAlignment: 'left'
                             }
                         }
                     />

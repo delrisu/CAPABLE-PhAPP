@@ -3,6 +3,7 @@ import { Button }           from 'reactstrap';
 import MaterialTable        from'material-table';
 import Prescriptions        from './Prescriptions';
 import PatientsForm         from './PatientsForm';
+import PatientCard          from './PatientCard';
 import "./styles.css";
 import "./bootstrap.min.css";
 
@@ -52,7 +53,7 @@ const codes = {
     cm:                 "258672001",
     kg:                 "258683005",
     years:              "258707000",
-    perWeek:           "259038000"
+    perWeek:            "259038000"
 }
 
 function Get(yourUrl){
@@ -80,7 +81,7 @@ function Get(yourUrl){
             field: "gender"
         },
         {
-            title: "Birth date",
+            title: "Date of birth",
             field: "birthDate"
         },
         {
@@ -159,7 +160,9 @@ export default function Patients() {
     const [patientFormData,setPatientFormData] = useState({});
     const [prescShow, setPrescShow] = useState(false);
     const [prescData, setPrescData] = useState({});
-    const [patientID, setPatientID] = useState("");
+    const [patientCardShow, setPatientCardShow] = useState(false);
+    const [patientCardData, setPatientCardData] = useState({});
+    // const [patientID, setPatientID] = useState("");
 
     useEffect(() => {
         async function getData() {
@@ -352,6 +355,10 @@ export default function Patients() {
                         columns={columns}
                         data={patientsData!== undefined ? patientsData : null}
                         title=""
+                        onRowClick={(event, rowData) => {
+                            setPatientCardData(rowData);
+                            setPatientCardShow(true);
+                        }}
                         actions={[
                             {
                                 icon: 'add',
@@ -372,7 +379,6 @@ export default function Patients() {
                                 icon: 'edit',
                                 tooltip: 'View/Edit patient\'s data',
                                 onClick: (event, rowData) => {
-                                    // handleShow();
                                     setShow(true);
                                     setPatientFormData(rowData);
                                 }
@@ -392,7 +398,7 @@ export default function Patients() {
                         ]}
                         options={
                             {
-                                pageSize: 13
+                                pageSize: 10
                             },
                             {
                                 searchFieldAlignment: 'left'
@@ -420,6 +426,13 @@ export default function Patients() {
                             client={client}
                             data={prescData.medications}
                             patientRef={prescData}
+                        />
+                    }
+                    {patientCardShow===true &&
+                        <PatientCard
+                            show={patientCardShow}
+                            onHide={() => setPatientCardShow(false)}
+                            data={patientCardData}
                         />
                     }
                 </div>

@@ -16,7 +16,7 @@ class PrescriptionForm extends Component {
                 medicineCode:   '',
                 from:           '',
                 to:             '',
-                asNeeded:       0,
+                asNeeded:       false,
                 frequency:      0,
                 period:         0,
                 periodUnit:     '',
@@ -74,9 +74,6 @@ class PrescriptionForm extends Component {
 
     async addNewPrescription () {
         let tmpStr = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit
-        let timeStamp = Date.now();
-        // this.setState({dosing: tmpStr})
-        // this.state.dosing = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit;
         this.state.dosing = tmpStr;
         console.log("Dosing:")
         console.log(this.state.dosing)
@@ -125,8 +122,8 @@ class PrescriptionForm extends Component {
                     timing: {
                         repeat: {
                             boundsPeriod: {
-                                start: this.state.begin,
-                                end: this.state.end
+                                start: this.state.from,
+                                end: this.state.to
                             },
                             frequency: this.state.frequency,
                             period: this.state.period,
@@ -149,13 +146,14 @@ class PrescriptionForm extends Component {
     }
 
     async updatePrescription () {
-        this.state.dosing = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit;
+        let tmpStr = this.state.frequency + "x " + this.state.doseValue + this.state.doseUnit + " every " + this.state.period + " " + this.state.periodUnit
+        this.state.dosing = tmpStr;
         let entry = {
             resourceType: "MedicationRequest",
             id: this.state.id,
             status: "active",
             intent: "order",
-            dosageIntruction: [{
+            dosageInstruction: [{
                 text: this.state.dosing,
                 timing: {
                     repeat: {
@@ -260,8 +258,8 @@ class PrescriptionForm extends Component {
                                         id="asNeeded"
                                         className="form-control">
                                     <option value="" selected disabled hidden>Choose...</option>
-                                    <option value={0}>False</option>
-                                    <option value={1}>True</option>
+                                    <option value={false}>False</option>
+                                    <option value={true}>True</option>
                                 </select>
                             </div>
                         </div>

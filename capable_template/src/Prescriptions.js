@@ -111,7 +111,7 @@ export default function Prescriptions({client, data, show, onHide, patientRef}) 
                                 icon: 'delete',
                                 tooltip: 'Remove this prescription',
                                 onClick: (event, rowData) => {
-
+                                    client.delete({resourceType: 'MedicationRequest', id: rowData.id});
                                 }
                             },
                             {

@@ -18,8 +18,8 @@ class PatientsForm extends Component {
                 weight: 0,
                 height: 0,
                 bmi: 0,
-                yearsSmoking: "",
-                yearsDrinking: "",
+                yearsSmoking: 0,
+                yearsDrinking: 0,
                 dyssomnia: 0,
                 diabetes: 0,
                 hypertension: 0,
@@ -60,9 +60,9 @@ class PatientsForm extends Component {
             dyssomnia:          44186003,
             diabetes_mellitus:  73211009,
             hypertension:       38341003,
-            collagenVascular:  398049005,
+            collagenVascular:   398049005,
             ibd:                24526004,
-            physicalActivity:  68130003,
+            physicalActivity:   68130003,
             gastro_operation:   386621005,
             diet:               230125005,
             cm:                 258672001,
@@ -77,6 +77,7 @@ class PatientsForm extends Component {
         this.createObservation = this.createObservation.bind(this);
         this.addNewPatient = this.addNewPatient.bind(this);
         this.updatePatient = this.updatePatient.bind(this);
+        this.createCommunication = this.createCommunication.bind(this);
     }
 
     handleChange (event) {
@@ -139,7 +140,151 @@ class PatientsForm extends Component {
         }
     }
 
-    addNewPatient () {
+    createCommunication(type, resourceId, obsArray) {
+        if (type === "Patient") {
+            return {
+                resourceType: "Communication",
+                status: "completed",
+                payload: [
+                    {
+                        contentReference: {
+                            reference: "Patient/" + resourceId,
+                            type: "Patient",
+                            identifier: {
+                                value: resourceId.toString()
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        else if (type === "Single Communication") {
+            return {
+                resourceType: "Communication",
+                status: "in-progress",
+                payload: [
+                    {
+                        contentReference: {
+                            reference: "Observation" + resourceId,
+                            type: "Observation",
+                            identifier: {
+                                value: resourceId.toString()
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        else {
+            return {
+                resourceType: "Communication",
+                status: "in-progress",
+                payload: [
+                    {
+                        contentReference: {
+                            reference: "Observation" + obsArray[0],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[0]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[1],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[1]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[2],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[2]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[3],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[3]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[4],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[4]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[5],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[5]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[6],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[6]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[7],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[7]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[8],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[8]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[9],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[9]
+                            }
+                        }
+                    },
+                    {
+                        contentReference: {
+                            reference: "Observation/" + obsArray[10],
+                            type: "Observation",
+                            identifier: {
+                                value: obsArray[10]
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    async addNewPatient () {
+        let allObservations = [];
         let entry = {
                 resourceType: "Patient",
                 name: [ 
@@ -152,36 +297,74 @@ class PatientsForm extends Component {
                 gender: this.state.gender,
                 birthDate: this.state.birthDate
         }
-        // console.log(this.props.client)
-        this.props.client.create({resourceType: "Patient", body: entry})
-            .then((resource) => {
-                // console.log(resource)
-                let entryObs = this.createObservation(this.codes.height, this.state.height, resource.id, this.codes.cm, "Body height measure", "Centimeter");
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // height
-                entryObs = this.createObservation(this.codes.weight, this.state.weight, resource.id, this.codes.kg, "Body weight", "Kg");
-                this.props.client.create({resourceType: "Observation", body: entryObs});// weight
-                entryObs = this.createObservation(this.codes.bmi, this.state.bmi, resource.id, 0, "Body mass index", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // bmi
-                entryObs = this.createObservation(this.codes.smoker, this.state.yearsSmoking, resource.id, this.codes.years, "Smoker", "years");
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // smoker
-                entryObs = this.createObservation(this.codes.drinker, this.state.yearsDrinking, resource.id, this.codes.years, "Drinker", "years");
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // drinker
-                entryObs = this.createObservation(this.codes.dyssomnia, this.state.dyssomnia, resource.id, 0, "Dyssomnia", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // dyssomnia
-                entryObs = this.createObservation(this.codes.diabetes_mellitus, this.state.diabetes, resource.id, 0, "Diabetes mellitus", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // diabetes mellitus
-                entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, resource.id, 0, "Hypertensive disorder", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // hypertension
-                entryObs = this.createObservation(this.codes.collagenVascular, this.state.collagenVascular, resource.id, 0, "Collagen vascular", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // collagen vascular
-                entryObs = this.createObservation(this.codes.ibd, this.state.ibd, resource.id, 0, "Inflammatory bowel disease", null);
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // ibd
-                entryObs = this.createObservation(this.codes.physicalActivity, this.state.physicalActivity, resource.id, this.codes.per_week, "Physical activity", "per week");
-                this.props.client.create({resourceType: "Observation", body: entryObs}); // physical activity
-            }) 
+
+        let resource = await this.props.client.create({resourceType: "Patient", body: entry})
+
+        let entryPatient = this.createCommunication("Patient", resource.id, null);
+        this.props.client.create({resourceType: "Communication", body: entryPatient});
+
+        let entryObs = this.createObservation(this.codes.height, this.state.height, resource.id, this.codes.cm, "Body height measure", "Centimeter");
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // height
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.weight, this.state.weight, resource.id, this.codes.kg, "Body weight", "Kg");
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // weight
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.bmi, this.state.bmi, resource.id, 0, "Body mass index", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // bmi
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.smoker, this.state.yearsSmoking, resource.id, this.codes.years, "Smoker", "years");
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // smoker
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.drinker, this.state.yearsDrinking, resource.id, this.codes.years, "Drinker", "years");
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // drinker
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.dyssomnia, this.state.dyssomnia, resource.id, 0, "Dyssomnia", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // dyssomnia
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.diabetes_mellitus, this.state.diabetes, resource.id, 0, "Diabetes mellitus", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // diabetes mellitus
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, resource.id, 0, "Hypertensive disorder", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // hypertension
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.collagenVascular, this.state.collagenVascular, resource.id, 0, "Collagen vascular", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // collagen vascular
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.ibd, this.state.ibd, resource.id, 0, "Inflammatory bowel disease", null);
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // ibd
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+        entryObs = this.createObservation(this.codes.physicalActivity, this.state.physicalActivity, resource.id, this.codes.per_week, "Physical activity", "per week");
+        await this.props.client.create({resourceType: "Observation", body: entryObs}) // physical activity
+            .then((resource2) => {
+                allObservations.push(resource2.id)
+            })
+
+        let entryComm = this.createCommunication("Communication", null, allObservations);
+        this.props.client.create({resourceType: "Communication", body: entryComm});
     }
 
     async updatePatient () {
+        let entryObs, entryComm;
         let entry = {
             resourceType: "Patient",
             name: [ 
@@ -195,53 +378,74 @@ class PatientsForm extends Component {
             birthDate: this.state.birthDate
         };
 
-        let entryObs;
         const resource = await this.props.client.update({resourceType: "Patient", id: this.props.data.id, body: entry})
         console.log("Update response:")
         console.log(resource)
-        if (this.state.height !== this.props.data.height) {
+        if (this.state.height !== this.props.data.height) { // height
             entryObs = this.createObservation(this.codes.height, this.state.height, this.props.data.id, this.codes.cm, "Body height measure", "Centimeter");
-            await this.props.client.update({resourceType: "Observation", id: this.props.data.heightID, body: entryObs}); // height
+            this.props.client.update({resourceType: "Observation", id: this.props.data.heightID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.heightID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.weight !== this.props.data.weight) {
+        if (this.state.weight !== this.props.data.weight) {// weight
             entryObs = this.createObservation(this.codes.weight, this.state.weight, this.props.data.id, this.codes.kg, "Body weight", "Kg");
-            this.props.client.update({resourceType: "Observation", id: this.props.data.weightID, body: entryObs});// weight
+            this.props.client.update({resourceType: "Observation", id: this.props.data.weightID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.weightID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.bmi !== this.props.data.bmi) {
+        if (this.state.bmi !== this.props.data.bmi) { // bmi
             entryObs = this.createObservation(this.codes.bmi, this.state.bmi, this.props.data.id, 0, "Body mass index", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.bmiID, body: entryObs}); // bmi
+            this.props.client.update({resourceType: "Observation", id: this.props.data.bmiID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.bmiID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.yearsSmoking !== this.props.data.yearsSmoking) {
+        if (this.state.yearsSmoking !== this.props.data.yearsSmoking) { // smoker
             entryObs = this.createObservation(this.codes.smoker, this.state.yearsSmoking, this.props.data.id, this.codes.years, "Smoker", "years");
-            this.props.client.update({resourceType: "Observation", id: this.props.data.yearsSmokingID, body: entryObs}); // smoker
+            this.props.client.update({resourceType: "Observation", id: this.props.data.yearsSmokingID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.yearsSmokingID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.yearsDrinking !== this.props.data.yearsDrinking) {
+        if (this.state.yearsDrinking !== this.props.data.yearsDrinking) { // drinker
             entryObs = this.createObservation(this.codes.drinker, this.state.yearsDrinking, this.props.data.id, this.codes.years, "Drinker", "years");
-            this.props.client.update({resourceType: "Observation", id: this.props.data.yearsDrinkingID, body: entryObs}); // drinker
+            this.props.client.update({resourceType: "Observation", id: this.props.data.yearsDrinkingID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.yearsDrinkingID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.dyssomnia !== this.props.data.dyssomnia) {
+        if (this.state.dyssomnia !== this.props.data.dyssomnia) { // dyssomnia
             entryObs = this.createObservation(this.codes.dyssomnia, this.state.dyssomnia, this.props.data.id, 0, "Dyssomnia", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.dyssomniaID, body: entryObs}); // dyssomnia
+            this.props.client.update({resourceType: "Observation", id: this.props.data.dyssomniaID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.dyssomniaID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.diabetes !== this.props.data.diabetes) {
+        if (this.state.diabetes !== this.props.data.diabetes) { // diabetes mellitus
             entryObs = this.createObservation(this.codes.diabetes_mellitus, this.state.diabetes, this.props.data.id, 0, "Diabetes mellitus", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.diabetesID, body: entryObs}); // diabetes mellitus
+            this.props.client.update({resourceType: "Observation", id: this.props.data.diabetesID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.diabetesID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.hypertension !== this.props.data.hypertension) {
+        if (this.state.hypertension !== this.props.data.hypertension) { // hypertension
             entryObs = this.createObservation(this.codes.hypertension, this.state.hypertension, this.props.data.id, 0, "Hypertensive disorder", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.hypertensionID, body: entryObs}); // hypertension
+            this.props.client.update({resourceType: "Observation", id: this.props.data.hypertensionID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.hypertensionID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.collagenVascular !== this.props.data.collagenVascular) {
+        if (this.state.collagenVascular !== this.props.data.collagenVascular) { // collagen vascular
             entryObs = this.createObservation(this.codes.collagenVascular, this.state.collagenVascular, this.props.data.id, 0, "Collagen vascular", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.collagen_vascularID, body: entryObs}); // collagen vascular
+            this.props.client.update({resourceType: "Observation", id: this.props.data.collagen_vascularID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.collagen_vascularID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.ibd !== this.props.data.ibd) {
+        if (this.state.ibd !== this.props.data.ibd) { // ibd
             entryObs = this.createObservation(this.codes.ibd, this.state.ibd, this.props.data.id, 0, "Inflammatory bowel disease", null);
-            this.props.client.update({resourceType: "Observation", id: this.props.data.ibdID, body: entryObs}); // ibd
+            this.props.client.update({resourceType: "Observation", id: this.props.data.ibdID, body: entryObs});
+            entryComm = this.createCommunication("Communication", this.props.data.ibdID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
-        if (this.state.physicalActivity !== this.props.data.physicalActivity) {
+        if (this.state.physicalActivity !== this.props.data.physicalActivity) { // physical activity
             entryObs = this.createObservation(this.codes.physicalActivity, this.state.physicalActivity, this.props.data.id, this.codes.per_week, "Physical activity", "per week");
-            this.props.client.update({resourceType: "Observation", id: this.props.data.physical_activityID, body: entryObs}); // physical activity
+            this.props.client.update({resourceType: "Observation", id: this.props.data.physical_activityID, body: entryObs}); 
+            entryComm = this.createCommunication("Communication", this.props.data.physical_activityID, null);
+            this.props.client.create({resourceType: "Communication", body: entryComm});
         }
     }
 

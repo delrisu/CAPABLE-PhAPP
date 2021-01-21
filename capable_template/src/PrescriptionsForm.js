@@ -21,7 +21,7 @@ class PrescriptionForm extends Component {
                 period:         0,
                 periodUnit:     '',
                 doseValue:      0,
-                doseUnit:       '',
+                doseUnit:       'mg',
                 dosing:         ''
             };
         }
@@ -143,6 +143,25 @@ class PrescriptionForm extends Component {
         }
         // console.log(this.props.client)
         let response = await this.props.client.create({resourceType: "MedicationRequest", body: entry})
+            .then((resource) => {
+                let entryComm = {
+                    resourceType: "Communication",
+                    status: "in-progress",
+                    payload: [
+                        {
+                            contentReference: {
+                                reference: "MedicationRequest/" + resource.id,
+                                type: "MedicationRequest",
+                                identifier: {
+                                    value: resource.id
+                                }
+                            }
+                        }
+                    ]
+                }
+
+                this.props.client.create({resourceType: "Communication", body: entryComm});
+            })
     }
 
     async updatePrescription () {

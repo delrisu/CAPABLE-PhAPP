@@ -4,6 +4,8 @@ import MaterialTable        from'material-table';
 import Prescriptions        from './Prescriptions';
 import PatientsForm         from './PatientsForm';
 import PatientCard          from './PatientCard';
+import status_tick from     './images/status_tick.png';
+import status_x from        './images/status_x.png';
 import "./styles.css";
 import "./bootstrap.min.css";
 
@@ -97,6 +99,11 @@ function Get(yourUrl){
             field: "lastUpdated"
         },
         {
+            title: "Status",
+            field: "status",
+            render: rowData => <img src={rowData.status} alt={'Status'} style={{width: 20, borderRadius: '50%'}}/>
+        },
+        {
             title: "Years drinking",
             field: "yearsDrinking",
             hidden: true
@@ -166,8 +173,8 @@ export default function Patients() {
 
     useEffect(() => {
         async function getData() {
-            let fetchedPatients, fetchedObservations, fetchedMedReqs;
-            let i, j, k, nextPage, currentCode;
+            let fetchedPatients = [], fetchedObservations = [], fetchedMedReqs = [], fetchedDrafts = [], fetchedComms = [];
+            let i, j, k, l, m, nextPage, currentCode;
             let patients = [];
         
             await client.search({resourceType: 'Patient'}).then((resource) => {
@@ -187,6 +194,15 @@ export default function Patients() {
                     }
                 }
             })
+
+            // console.log("Szukanie pustego:")
+            // client.search({resourceType: 'Communication', params: 
+            //     {
+            //         status: "in-progress"
+            //     }})
+            //     .then((resource) => {
+            //         console.log(resource)
+            //     })
         
             await client.search({resourceType: 'Observation'}).then((resource) => {
                 fetchedObservations = resource.entry
@@ -206,7 +222,7 @@ export default function Patients() {
                 }
             })
 
-            await client.search({resourceType: 'MedicationRequest'}).then((resource) => {
+            await client.search({resourceType: 'MedicationRequest', params: {status: "active"}}).then((resource) => {
                 fetchedMedReqs = resource.entry
                 if (resource.total > 10) {
                     let numOfPages = Math.ceil(resource.total/10)
@@ -223,40 +239,88 @@ export default function Patients() {
                     }
                 }
             })
+
+            await client.search({resourceType: 'MedicationRequest', params: {status: "draft"}}).then((resource) => {
+                console.log(resource)
+                if (resource.total > 0) {
+                    fetchedDrafts = resource.entry
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
+
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedDrafts = fetchedDrafts.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedDrafts = fetchedDrafts.concat(nextPage.entry);
+                            }
+                        }
+                    }
+                }
+            })
+
+            // console.log("Fetched medReqs:")
+            // console.log(fetchedMedReqs)
+            await client.search({resourceType: 'Communication', params: {status: "preparation"}}).then((resource) => {
+                fetchedComms = resource.entry
+                if (resource.total > 10) {
+                    let numOfPages = Math.ceil(resource.total/10)
+
+                    for (i = 1; i < numOfPages; i++) {
+                        if (i === 1) {
+                            nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                            fetchedComms = fetchedComms.concat(nextPage.entry);
+                        }
+                        else {
+                            nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                            fetchedComms = fetchedComms.concat(nextPage.entry);
+                        }
+                    }
+                }
+            })
+
+            console.log(fetchedComms)
         
             for (i = 0; i < fetchedPatients.length; i++) {
                 let patientData = {
-                    id: '',
-                    fname: '',
-                    sname: '',
-                    birthDate: '',
-                    gender: '',
-                    lastUpdated: '',
-                    height: 0,
-                    heightID: '',
-                    weight: 0,
-                    weightID: '',
-                    bmi: 0,
-                    bmiID: '',
-                    yearsSmoking: 0,
-                    yearsSmokingID: '',
-                    yearsDrinking: 0,
-                    yearsDrinkingID: '',
-                    diabetes: 0,
-                    diabetesID: '',
-                    hypertension: 0,
-                    hypertensionID: '',
-                    gastroOperation: 0,
-                    gastroOperationID: '',
-                    dyssomnia: 0,
-                    dyssomniaID: '',
-                    collagenVascular: 0,
-                    collagen_vascularID: '',
-                    physicalActivity: 0,
-                    physical_activityID: '',
-                    ibd: 0,
-                    ibdID: '',
-                    medications: []
+                    id:                     '',
+                    fname:                  '',
+                    sname:                  '',
+                    birthDate:              '',
+                    gender:                 '',
+                    lastUpdated:            '',
+                    height:                 0,
+                    heightID:               '',
+                    weight:                 0,
+                    weightID:               '',
+                    bmi:                    0,
+                    bmiID:                  '',
+                    yearsSmoking:           0,
+                    yearsSmokingID:         '',
+                    yearsDrinking:          0,
+                    yearsDrinkingID:        '',
+                    diabetes:               0,
+                    diabetesID:             '',
+                    hypertension:           0,
+                    hypertensionID:         '',
+                    gastroOperation:        0,
+                    gastroOperationID:      '',
+                    dyssomnia:              0,
+                    dyssomniaID:            '',
+                    collagenVascular:       0,
+                    collagen_vascularID:    '',
+                    physicalActivity:       0,
+                    physical_activityID:    '',
+                    ibd:                    0,
+                    ibdID:                  '',
+                    medications:            [],
+                    medicationIDs:          [],
+                    communications:         [],
+                    communicationIDs:       [],
+                    drafts:                 [],
+                    status:                 null
                 }
                 patientData.id = fetchedPatients[i].resource.id;
                 patientData.fname = fetchedPatients[i].resource.name[0].given[0];
@@ -323,13 +387,34 @@ export default function Patients() {
                 }
 
                 for (k = 0; k < fetchedMedReqs.length; k++) {
-                    if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id)) {
+                    if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedMedReqs[k].resource.status !== "canceled") {
                         patientData.medications.push(fetchedMedReqs[k])
+                        patientData.medicationIDs.push(fetchedMedReqs[k].resource.id)
                     }
+                }
+
+                for (l = 0; l < fetchedComms.length; l++) {
+                    if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
+                        patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
+                        patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                    }
+                }
+
+                for (m = 0; m < fetchedDrafts.length; m++) {
+                    if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
+                        patientData.drafts.push(fetchedDrafts[m])
+                    }
+                }
+
+                if (patientData.communications.length !== 0) {
+                    patientData.status = status_x
+                }
+                else {
+                    patientData.status = status_tick
                 }
                 patients.push(patientData);
             }
-            console.log(patients)
+            // console.log(patients)
             setPatientsData(patients)
         }
         getData();
@@ -389,7 +474,7 @@ export default function Patients() {
                                 tooltip: 'Prescriptions',
                                 onClick: (event, rowData) => {
                                     setPrescShow(true);
-                                    console.log(rowData.medications);
+                                    // console.log(rowData.medications);
                                     setPrescData(rowData);
                                     // setPatientID(rowData.id);
                                     // console.log(patientID);
@@ -425,6 +510,9 @@ export default function Patients() {
                             onHide={() => setPrescShow(false)}
                             client={client}
                             data={prescData.medications}
+                            comms={prescData.communications}
+                            commIDs={prescData.communicationIDs}
+                            drafts={prescData.drafts}
                             patientRef={prescData}
                         />
                     }

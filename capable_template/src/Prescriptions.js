@@ -240,6 +240,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                                         status: "in-progress"
                                     }
                                     client.update({resourceType: 'Communication', id: rowData.attachedCommID, body: entryComm})
+                                    window.location.reload(false);
                                 }
                                 else {
                                     alert("Rejected suggested changes!")
@@ -247,6 +248,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                             }
                             else {
                                 alert("This prescription does not require any action to be taken!")
+                                // window.location.reload(false);
                             }
                         }}
                         actions={[

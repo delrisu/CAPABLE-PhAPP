@@ -15,7 +15,7 @@ export default function App() {
                 <Navbar />
             </div>
             <div className="content">
-                <Redirect exact from="/" to="/Home" />
+                <Redirect exact from="/" to="/Patients" />
                 <Route component={Home} path="/Home" />
                 <Route component={Dashboard} path="/Dashboard" />
                 <Route component={Patients} path="/Patients" />

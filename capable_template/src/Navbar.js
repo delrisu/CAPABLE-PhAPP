@@ -15,23 +15,18 @@ export default class Navbar extends React.Component {
             <nav className="Nav">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <NavLink className="nav-link" to="/Home">
+                        <NavLink className="nav-link" to="/Patients">
                             <img className="nav-logo" src={logo} alt={logo} />
-                        </NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink className="nav-link-non-active" activeClassName="nav-link-active" to="/Home">
-                            <div className="link-color"><AiOutlineHome className="menu-icon"/> Homepage</div>
-                        </NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink className="nav-link-non-active" activeClassName="nav-link-active" to="/Dashboard">
-                            <div className="link-color"><ImNewspaper className="menu-icon"/> Dashboard</div>
                         </NavLink>
                     </li>
                     <li className="nav-item">
                         <NavLink className="nav-link-non-active" activeClassName="nav-link-active" to="/Patients">
                             <div className="link-color"><BsPeopleFill className="menu-icon"/> My Patients</div>
+                        </NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link-non-active" activeClassName="nav-link-active" to="/Dashboard">
+                            <div className="link-color"><ImNewspaper className="menu-icon"/> Dashboard</div>
                         </NavLink>
                     </li>
                     <li className="nav-item">

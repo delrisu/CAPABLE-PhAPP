@@ -205,18 +205,20 @@ export default function Patients() {
             //     })
         
             await client.search({resourceType: 'Observation'}).then((resource) => {
-                fetchedObservations = resource.entry
-                if (resource.total > 10) {
-                    let numOfPages = Math.ceil(resource.total/10)
-                    console.log("Num of pages: " + numOfPages);
-                    for (i = 1; i < numOfPages; i++) {
-                        if (i === 1) {
-                            nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
-                            fetchedObservations = fetchedObservations.concat(nextPage.entry);
-                        }
-                        else {
-                            nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
-                            fetchedObservations = fetchedObservations.concat(nextPage.entry);
+                if (resource.total > 0) {
+                    fetchedObservations = resource.entry
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
+                        console.log("Num of pages: " + numOfPages);
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedObservations = fetchedObservations.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedObservations = fetchedObservations.concat(nextPage.entry);
+                            }
                         }
                     }
                 }

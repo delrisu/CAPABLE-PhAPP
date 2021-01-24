@@ -97,6 +97,65 @@ class PatientsForm extends Component {
     }
 
     createObservation(obsCode, obsTypeVal, patientId, valCode, obsDisplay, valueUnit) {
+        let effDate = new Date();
+        effDate.setDate(effDate.getDate()-7)
+        let dateString = effDate.getFullYear() + '-'
+        if ((effDate.getMonth()+1) < 10) {
+            dateString += '0' + (effDate.getMonth()+1) + '-'
+        }
+        else {
+            dateString += (effDate.getMonth()+1) + '-'
+        }
+
+        if (effDate.getDate() < 10) {
+            dateString += '0' + effDate.getDate() + 'T'
+        }
+        else {
+            dateString += effDate.getDate() + 'T'
+        }
+
+        if (effDate.getHours < 10) {
+            dateString += '0' + effDate.getHours() + ':'
+        }
+        else {
+            dateString += effDate.getHours() + ':'
+        }
+
+        if (effDate.getMinutes < 10) {
+            dateString += '0' + effDate.getMinutes() + ':'
+        }
+        else {
+            dateString += effDate.getMinutes() + ':'
+        }
+
+        if (effDate.getSeconds < 10) {
+            dateString += '0' + effDate.getSeconds()
+        }
+        else {
+            dateString += effDate.getSeconds()
+        }
+        let timezone = effDate.getTimezoneOffset()
+        timezone = timezone/(-60)
+        if (timezone < 10 || timezone > -10) {
+            if (timezone >= 0) {
+                dateString += ('+0' + timezone + ':00')
+            }
+            else {
+                dateString += ('-0' + Math.abs(timezone) + ':00')
+            }
+        }
+        else {
+            if (timezone >= 0) {
+                dateString += ('+' + timezone + ':00')
+            }
+            else {
+                dateString += ('-' + Math.abs(timezone) + ':00')
+            }
+        }
+
+        // let tmpString = effDate.toString()
+
+        // dateString = dateString + tmpString.substr(tmpString.length-4, tmpString.length-2) + ':' + tmpString.substr(tmpString.length-1,tmpString.length)
         if (valCode === 0) {
             return {
                 resourceType: "Observation",
@@ -111,6 +170,7 @@ class PatientsForm extends Component {
                 subject: {
                     reference: "Patient/" + patientId
                 },
+                effectiveDateTime: dateString,
                 valueQuantity: {
                     value: obsTypeVal
                 }
@@ -130,6 +190,7 @@ class PatientsForm extends Component {
                 subject: {
                     reference: "Patient/" + patientId
                 },
+                effectiveDateTime: dateString,
                 valueQuantity: {
                     value: obsTypeVal,
                     unit: valueUnit,

@@ -400,17 +400,20 @@ export default function Patients() {
                             patientData.medicationIDs.push(fetchedMedReqs[k].resource.id)
                         }
                     }
-
-                    for (l = 0; l < fetchedComms.length; l++) {
-                        if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
-                            patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
-                            patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                    if (fetchedComms !== undefined || fetchedComms.length > 0) {
+                        for (l = 0; l < fetchedComms.length; l++) {
+                            if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
+                                patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
+                                patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                            }
                         }
                     }
 
-                    for (m = 0; m < fetchedDrafts.length; m++) {
-                        if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
-                            patientData.drafts.push(fetchedDrafts[m])
+                    if (fetchedDrafts !== undefined || fetchedDrafts.length > 0) {
+                        for (m = 0; m < fetchedDrafts.length; m++) {
+                            if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
+                                patientData.drafts.push(fetchedDrafts[m])
+                            }
                         }
                     }
 

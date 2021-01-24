@@ -182,7 +182,7 @@ class PatientsForm extends Component {
                 payload: [
                     {
                         contentReference: {
-                            reference: "Observation" + obsArray[0],
+                            reference: "Observation/" + obsArray[0],
                             type: "Observation",
                             identifier: {
                                 value: obsArray[0]
@@ -300,8 +300,8 @@ class PatientsForm extends Component {
 
         let resource = await this.props.client.create({resourceType: "Patient", body: entry})
 
-        let entryPatient = this.createCommunication("Patient", resource.id, null);
-        this.props.client.create({resourceType: "Communication", body: entryPatient});
+        // let entryPatient = this.createCommunication("Patient", resource.id, null);
+        // this.props.client.create({resourceType: "Communication", body: entryPatient});
 
         let entryObs = this.createObservation(this.codes.height, this.state.height, resource.id, this.codes.cm, "Body height measure", "Centimeter");
         await this.props.client.create({resourceType: "Observation", body: entryObs}) // height
@@ -360,7 +360,8 @@ class PatientsForm extends Component {
             })
 
         let entryComm = this.createCommunication("Communication", null, allObservations);
-        this.props.client.create({resourceType: "Communication", body: entryComm});
+        await this.props.client.create({resourceType: "Communication", body: entryComm});
+        window.location.reload(false);
     }
 
     async updatePatient () {

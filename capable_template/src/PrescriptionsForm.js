@@ -162,6 +162,24 @@ class PrescriptionForm extends Component {
 
                 this.props.client.create({resourceType: "Communication", body: entryComm});
             })
+        
+        let entryPatient = {
+            resourceType: "Communication",
+            status: "in-progress",
+            payload: [
+                {
+                    contentReference: {
+                        reference: "Patient/" + this.state.patient,
+                        type: "Patient",
+                        identifier: {
+                            value: this.state.patient
+                        }
+                    }
+                }
+            ]
+        }
+        await this.props.client.create({resourceType: "Communication", body: entryPatient});
+        window.location.reload(false);
     }
 
     async updatePrescription () {

@@ -178,18 +178,20 @@ export default function Patients() {
             let patients = [];
         
             await client.search({resourceType: 'Patient'}).then((resource) => {
-                fetchedPatients = resource.entry
-                console.log(resource.entry)
-                if (resource.total > 10) {
-                    let numOfPages = Math.ceil(resource.total/10)
-                    for (i = 1; i < numOfPages; i++) {
-                        if (i === 1) {
-                            nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
-                            fetchedPatients = fetchedPatients.concat(nextPage.entry);
-                        }
-                        else {
-                            nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
-                            fetchedPatients = fetchedPatients.concat(nextPage.entry);
+                if (resource.total > 0) {
+                    fetchedPatients = resource.entry
+                    console.log(resource.entry)
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedPatients = fetchedPatients.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedPatients = fetchedPatients.concat(nextPage.entry);
+                            }
                         }
                     }
                 }
@@ -225,18 +227,20 @@ export default function Patients() {
             })
 
             await client.search({resourceType: 'MedicationRequest', params: {status: "active"}}).then((resource) => {
+                if (resource.total > 0) {
                 fetchedMedReqs = resource.entry
-                if (resource.total > 10) {
-                    let numOfPages = Math.ceil(resource.total/10)
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
 
-                    for (i = 1; i < numOfPages; i++) {
-                        if (i === 1) {
-                            nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
-                            fetchedMedReqs = fetchedMedReqs.concat(nextPage.entry);
-                        }
-                        else {
-                            nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
-                            fetchedMedReqs = fetchedMedReqs.concat(nextPage.entry);
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedMedReqs = fetchedMedReqs.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedMedReqs = fetchedMedReqs.concat(nextPage.entry);
+                            }
                         }
                     }
                 }
@@ -266,158 +270,161 @@ export default function Patients() {
             // console.log("Fetched medReqs:")
             // console.log(fetchedMedReqs)
             await client.search({resourceType: 'Communication', params: {status: "preparation"}}).then((resource) => {
+                if (resource.total > 0) {
                 fetchedComms = resource.entry
-                if (resource.total > 10) {
-                    let numOfPages = Math.ceil(resource.total/10)
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
 
-                    for (i = 1; i < numOfPages; i++) {
-                        if (i === 1) {
-                            nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
-                            fetchedComms = fetchedComms.concat(nextPage.entry);
-                        }
-                        else {
-                            nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
-                            fetchedComms = fetchedComms.concat(nextPage.entry);
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedComms = fetchedComms.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedComms = fetchedComms.concat(nextPage.entry);
+                            }
                         }
                     }
                 }
             })
 
             console.log(fetchedComms)
-        
-            for (i = 0; i < fetchedPatients.length; i++) {
-                let patientData = {
-                    id:                     '',
-                    fname:                  '',
-                    sname:                  '',
-                    birthDate:              '',
-                    gender:                 '',
-                    lastUpdated:            '',
-                    height:                 0,
-                    heightID:               '',
-                    weight:                 0,
-                    weightID:               '',
-                    bmi:                    0,
-                    bmiID:                  '',
-                    yearsSmoking:           0,
-                    yearsSmokingID:         '',
-                    yearsDrinking:          0,
-                    yearsDrinkingID:        '',
-                    diabetes:               0,
-                    diabetesID:             '',
-                    hypertension:           0,
-                    hypertensionID:         '',
-                    gastroOperation:        0,
-                    gastroOperationID:      '',
-                    dyssomnia:              0,
-                    dyssomniaID:            '',
-                    collagenVascular:       0,
-                    collagen_vascularID:    '',
-                    physicalActivity:       0,
-                    physical_activityID:    '',
-                    ibd:                    0,
-                    ibdID:                  '',
-                    medications:            [],
-                    medicationIDs:          [],
-                    communications:         [],
-                    communicationIDs:       [],
-                    drafts:                 [],
-                    status:                 null
-                }
-                patientData.id = fetchedPatients[i].resource.id;
-                patientData.fname = fetchedPatients[i].resource.name[0].given[0];
-                patientData.sname = fetchedPatients[i].resource.name[0].family;
-                patientData.birthDate = fetchedPatients[i].resource.birthDate;
-                patientData.gender = fetchedPatients[i].resource.gender;
-                patientData.lastUpdated = fetchedPatients[i].resource.meta.lastUpdated.slice(0,10) + " " + fetchedPatients[i].resource.meta.lastUpdated.slice(11,16);
-                for (j = 0; j < fetchedObservations.length; j++) {
-                    if (fetchedObservations[j].resource.subject.reference === ("Patient/" + patientData.id)) {
-                        currentCode = fetchedObservations[j].resource.code.coding[0].code;
-                        switch(currentCode) {
-                            case codes.height: 
-                                patientData.height = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.heightID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.weight:
-                                patientData.weight = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.weightID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.bmi:
-                                patientData.bmi = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.bmiID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.yearsSmoking:
-                                patientData.yearsSmoking = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.yearsSmokingID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.yearsDrinking:
-                                patientData.yearsDrinking = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.yearsDrinkingID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.dyssomnia:
-                                patientData.dyssomnia = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.dyssomniaID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.diabetes:
-                                patientData.diabetes = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.diabetesID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.collagenVascular:
-                                patientData.collagenVascular = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.collagen_vascularID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.ibd:
-                                patientData.ibd = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.ibdID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.gastroOperation:
-                                patientData.gastroOperation = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.gastroOperationID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.physicalActivity:
-                                patientData.physicalActivity = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.physical_activityID = fetchedObservations[j].resource.id;
-                                break;
-                            case codes.hypertension:
-                                patientData.hypertension = fetchedObservations[j].resource.valueQuantity.value;
-                                patientData.hypertensionID = fetchedObservations[j].resource.id;
-                                break;
-                            default:
-                                break;
+            if (fetchedPatients !== undefined || fetchedPatients.length > 0) {
+                for (i = 0; i < fetchedPatients.length; i++) {
+                    let patientData = {
+                        id:                     '',
+                        fname:                  '',
+                        sname:                  '',
+                        birthDate:              '',
+                        gender:                 '',
+                        lastUpdated:            '',
+                        height:                 0,
+                        heightID:               '',
+                        weight:                 0,
+                        weightID:               '',
+                        bmi:                    0,
+                        bmiID:                  '',
+                        yearsSmoking:           0,
+                        yearsSmokingID:         '',
+                        yearsDrinking:          0,
+                        yearsDrinkingID:        '',
+                        diabetes:               0,
+                        diabetesID:             '',
+                        hypertension:           0,
+                        hypertensionID:         '',
+                        gastroOperation:        0,
+                        gastroOperationID:      '',
+                        dyssomnia:              0,
+                        dyssomniaID:            '',
+                        collagenVascular:       0,
+                        collagen_vascularID:    '',
+                        physicalActivity:       0,
+                        physical_activityID:    '',
+                        ibd:                    0,
+                        ibdID:                  '',
+                        medications:            [],
+                        medicationIDs:          [],
+                        communications:         [],
+                        communicationIDs:       [],
+                        drafts:                 [],
+                        status:                 null
+                    }
+                    patientData.id = fetchedPatients[i].resource.id;
+                    patientData.fname = fetchedPatients[i].resource.name[0].given[0];
+                    patientData.sname = fetchedPatients[i].resource.name[0].family;
+                    patientData.birthDate = fetchedPatients[i].resource.birthDate;
+                    patientData.gender = fetchedPatients[i].resource.gender;
+                    patientData.lastUpdated = fetchedPatients[i].resource.meta.lastUpdated.slice(0,10) + " " + fetchedPatients[i].resource.meta.lastUpdated.slice(11,16);
+                    for (j = 0; j < fetchedObservations.length; j++) {
+                        if (fetchedObservations[j].resource.subject.reference === ("Patient/" + patientData.id)) {
+                            currentCode = fetchedObservations[j].resource.code.coding[0].code;
+                            switch(currentCode) {
+                                case codes.height: 
+                                    patientData.height = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.heightID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.weight:
+                                    patientData.weight = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.weightID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.bmi:
+                                    patientData.bmi = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.bmiID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.yearsSmoking:
+                                    patientData.yearsSmoking = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.yearsSmokingID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.yearsDrinking:
+                                    patientData.yearsDrinking = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.yearsDrinkingID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.dyssomnia:
+                                    patientData.dyssomnia = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.dyssomniaID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.diabetes:
+                                    patientData.diabetes = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.diabetesID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.collagenVascular:
+                                    patientData.collagenVascular = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.collagen_vascularID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.ibd:
+                                    patientData.ibd = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.ibdID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.gastroOperation:
+                                    patientData.gastroOperation = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.gastroOperationID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.physicalActivity:
+                                    patientData.physicalActivity = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.physical_activityID = fetchedObservations[j].resource.id;
+                                    break;
+                                case codes.hypertension:
+                                    patientData.hypertension = fetchedObservations[j].resource.valueQuantity.value;
+                                    patientData.hypertensionID = fetchedObservations[j].resource.id;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
-                }
 
-                for (k = 0; k < fetchedMedReqs.length; k++) {
-                    if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedMedReqs[k].resource.status !== "canceled") {
-                        patientData.medications.push(fetchedMedReqs[k])
-                        patientData.medicationIDs.push(fetchedMedReqs[k].resource.id)
+                    for (k = 0; k < fetchedMedReqs.length; k++) {
+                        if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedMedReqs[k].resource.status !== "canceled") {
+                            patientData.medications.push(fetchedMedReqs[k])
+                            patientData.medicationIDs.push(fetchedMedReqs[k].resource.id)
+                        }
                     }
-                }
 
-                for (l = 0; l < fetchedComms.length; l++) {
-                    if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
-                        patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
-                        patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                    for (l = 0; l < fetchedComms.length; l++) {
+                        if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
+                            patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
+                            patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                        }
                     }
-                }
 
-                for (m = 0; m < fetchedDrafts.length; m++) {
-                    if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
-                        patientData.drafts.push(fetchedDrafts[m])
+                    for (m = 0; m < fetchedDrafts.length; m++) {
+                        if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
+                            patientData.drafts.push(fetchedDrafts[m])
+                        }
                     }
-                }
 
-                if (patientData.communications.length !== 0) {
-                    patientData.status = status_x
+                    if (patientData.communications.length !== 0) {
+                        patientData.status = status_x
+                    }
+                    else {
+                        patientData.status = status_tick
+                    }
+                    patients.push(patientData);
                 }
-                else {
-                    patientData.status = status_tick
-                }
-                patients.push(patientData);
+                // console.log(patients)
+                setPatientsData(patients)
             }
-            // console.log(patients)
-            setPatientsData(patients)
         }
         getData();
     }, [])

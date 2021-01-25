@@ -82,16 +82,20 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                 attachedCommID:   null
             }
 
-            drafts.forEach(element => {
-                if (medData.medicineCode === element.medicationCodeableConcept.coding[0].code) {
-                    medData.draft = element
-                }    
-            });
-            commIDs.forEach(element => {
-                if (element[1] === medData.id) {
-                    medData.attachedCommID = element[0]
-                }
-            })
+            if (drafts !== undefined || drafts.length > 0) {
+                drafts.forEach(element => {
+                    if (medData.medicineCode === element.medicationCodeableConcept.coding[0].code) {
+                        medData.draft = element
+                    }
+                });
+            }
+            if (commIDs !== undefined || drafts.length > 0) {
+                commIDs.forEach(element => {
+                    if (element[1] === medData.id) {
+                        medData.attachedCommID = element[0]
+                    }
+                })
+            }
 
             medData.dosing = medData.frequency + "x " + medData.doseValue + medData.doseUnit + " every " + medData.period + " " + medData.periodUnit;
             medications.push(medData);

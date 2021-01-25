@@ -402,9 +402,11 @@ export default function Patients() {
                     }
                     if (fetchedComms !== undefined || fetchedComms.length > 0) {
                         for (l = 0; l < fetchedComms.length; l++) {
-                            if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[0].contentReference.identifier.value) && fetchedComms[l].resource.payload[0].contentReference.type === "MedicationRequest") {
-                                patientData.communications.push(fetchedComms[l].resource.payload[0].contentReference.identifier.value)
-                                patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[0].contentReference.identifier.value])
+                            for (let n=0; n<fetchedComms[l].resource.payload.length; n++) {
+                                if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[n].contentReference.identifier.value) && fetchedComms[l].resource.payload[n].contentReference.type === "MedicationRequest") {
+                                    patientData.communications.push(fetchedComms[l].resource.payload[n].contentReference.identifier.value)
+                                    patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[n].contentReference.identifier.value])
+                                }
                             }
                         }
                     }

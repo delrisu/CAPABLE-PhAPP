@@ -411,7 +411,7 @@ export default function Patients() {
 
                     if (fetchedDrafts !== undefined || fetchedDrafts.length > 0) {
                         for (m = 0; m < fetchedDrafts.length; m++) {
-                            if (fetchedDrafts[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[k].resource.status !== "canceled") {
+                            if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "canceled") {
                                 patientData.drafts.push(fetchedDrafts[m])
                             }
                         }

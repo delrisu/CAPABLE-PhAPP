@@ -101,55 +101,56 @@ class PatientsForm extends Component {
         effDate.setDate(effDate.getDate()-7)
         let dateString = effDate.getFullYear() + '-'
         if ((effDate.getMonth()+1) < 10) {
-            dateString += '0' + (effDate.getMonth()+1) + '-'
+            dateString = dateString + '0' + (effDate.getMonth()+1) + '-'
         }
         else {
-            dateString += (effDate.getMonth()+1) + '-'
+            dateString = dateString + (effDate.getMonth()+1) + '-'
         }
 
         if (effDate.getDate() < 10) {
-            dateString += '0' + effDate.getDate() + 'T'
+            dateString = dateString + '0' + effDate.getDate() + 'T'
         }
         else {
-            dateString += effDate.getDate() + 'T'
+            dateString = dateString + effDate.getDate() + 'T'
         }
 
-        if (effDate.getHours < 10) {
-            dateString += '0' + effDate.getHours() + ':'
+        if (effDate.getHours() < 10) {
+            dateString = dateString + '0' + effDate.getHours() + ':'
         }
         else {
-            dateString += effDate.getHours() + ':'
+            dateString = dateString + effDate.getHours() + ':'
+        }
+        console.log(effDate.getSeconds())
+        if (effDate.getMinutes() < 10) {
+            dateString = dateString + '0' + effDate.getMinutes() + ':'
+            console.log(dateString)
+        }
+        else {
+            dateString = dateString + effDate.getMinutes() + ':'
         }
 
-        if (effDate.getMinutes < 10) {
-            dateString += '0' + effDate.getMinutes() + ':'
+        if (effDate.getSeconds() < 10) {
+            dateString = dateString + '0' + effDate.getSeconds()
         }
         else {
-            dateString += effDate.getMinutes() + ':'
-        }
-
-        if (effDate.getSeconds < 10) {
-            dateString += '0' + effDate.getSeconds()
-        }
-        else {
-            dateString += effDate.getSeconds()
+            dateString = dateString + effDate.getSeconds()
         }
         let timezone = effDate.getTimezoneOffset()
         timezone = timezone/(-60)
         if (timezone < 10 || timezone > -10) {
             if (timezone >= 0) {
-                dateString += ('+0' + timezone + ':00')
+                dateString = dateString + '+0' + timezone + ':00'
             }
             else {
-                dateString += ('-0' + Math.abs(timezone) + ':00')
+                dateString = dateString + '-0' + Math.abs(timezone) + ':00'
             }
         }
         else {
             if (timezone >= 0) {
-                dateString += ('+' + timezone + ':00')
+                dateString = dateString + '+' + timezone + ':00'
             }
             else {
-                dateString += ('-' + Math.abs(timezone) + ':00')
+                dateString = dateString + '-' + Math.abs(timezone) + ':00'
             }
         }
 

@@ -297,6 +297,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                     client={client}
                     data={false}
                     patient={patientRef.id}
+                    prescCount={data.length}
                 />
             }
             {prescEditShow===true &&
@@ -306,6 +307,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                     client={client}
                     data={prescFormEditData}
                     patient={patientRef.id}
+                    prescCount={data.length}
                 />
             }
             {

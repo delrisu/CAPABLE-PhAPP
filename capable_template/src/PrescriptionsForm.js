@@ -163,22 +163,24 @@ class PrescriptionForm extends Component {
                 this.props.client.create({resourceType: "Communication", body: entryComm});
             })
         
-        let entryPatient = {
-            resourceType: "Communication",
-            status: "in-progress",
-            payload: [
-                {
-                    contentReference: {
-                        reference: "Patient/" + this.state.patient,
-                        type: "Patient",
-                        identifier: {
-                            value: this.state.patient
+        if (this.props.prescCount === undefined || this.props.prescCount < 1) {
+            let entryPatient = {
+                resourceType: "Communication",
+                status: "in-progress",
+                payload: [
+                    {
+                        contentReference: {
+                            reference: "Patient/" + this.state.patient,
+                            type: "Patient",
+                            identifier: {
+                                value: this.state.patient
+                            }
                         }
                     }
-                }
-            ]
+                ]
+            }
+            await this.props.client.create({resourceType: "Communication", body: entryPatient});
         }
-        await this.props.client.create({resourceType: "Communication", body: entryPatient});
         window.location.reload(false);
     }
 
@@ -345,7 +347,7 @@ class PrescriptionForm extends Component {
                                     <option value="min">minute(s)</option>
                                     <option value="h">hour(s)</option>
                                     <option value="d">day(s)</option>
-                                    <option value="w">week(s)</option>
+                                    <option value="wk">week(s)</option>
                                 </select>
                             </div>
                         </div>
@@ -494,7 +496,7 @@ class PrescriptionForm extends Component {
                                     <option value="min">minute(s)</option>
                                     <option value="h">hour(s)</option>
                                     <option value="d">day(s)</option>
-                                    <option value="w">week(s)</option>
+                                    <option value="wk">week(s)</option>
                                 </select>
                             </div>
                         </div>

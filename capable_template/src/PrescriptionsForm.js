@@ -115,7 +115,11 @@ class PrescriptionForm extends Component {
                     }]
                 },
                 subject: {
-                    reference: "Patient/" + this.state.patient
+                    reference: "Patient/" + this.state.patient,
+                    type: "Patient",
+                    identifier: {
+                        value: this.state.patient
+                    }
                 },
                 dosageInstruction: [{
                     text: this.state.dosing,

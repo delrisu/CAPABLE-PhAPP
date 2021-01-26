@@ -173,7 +173,7 @@ export default function Patients() {
 
     useEffect(() => {
         async function getData() {
-            let fetchedPatients = [], fetchedObservations = [], fetchedMedReqs = [], fetchedDrafts = [], fetchedComms = [];
+            let fetchedPatients = [], fetchedObservations = [], fetchedMedReqs = [], fetchedDrafts = [], fetchedComms = [], fetchedStopped = [];
             let i, j, k, l, m, nextPage, currentCode;
             let patients = [];
         
@@ -267,8 +267,27 @@ export default function Patients() {
                 }
             })
 
-            // console.log("Fetched medReqs:")
-            // console.log(fetchedMedReqs)
+            await client.search({resourceType: 'MedicationRequest', params: {status: "stopped"}}).then((resource) => {
+                console.log(resource)
+                if (resource.total > 0) {
+                    fetchedStopped = resource.entry
+                    if (resource.total > 10) {
+                        let numOfPages = Math.ceil(resource.total/10)
+
+                        for (i = 1; i < numOfPages; i++) {
+                            if (i === 1) {
+                                nextPage = JSON.parse(Get(resource.link[1].url + "&_format=json"));
+                                fetchedStopped = fetchedStopped.concat(nextPage.entry);
+                            }
+                            else {
+                                nextPage = JSON.parse(Get(nextPage.link[1].url + "&_format=json")); 
+                                fetchedStopped = fetchedStopped.concat(nextPage.entry);
+                            }
+                        }
+                    }
+                }
+            })
+
             await client.search({resourceType: 'Communication', params: {status: "preparation"}}).then((resource) => {
                 if (resource.total > 0) {
                 fetchedComms = resource.entry
@@ -328,6 +347,7 @@ export default function Patients() {
                         communications:         [],
                         communicationIDs:       [],
                         drafts:                 [],
+                        stopped:                [],
                         status:                 null
                     }
                     patientData.id = fetchedPatients[i].resource.id;
@@ -393,31 +413,62 @@ export default function Patients() {
                             }
                         }
                     }
-
-                    for (k = 0; k < fetchedMedReqs.length; k++) {
-                        if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedMedReqs[k].resource.status !== "canceled") {
-                            patientData.medications.push(fetchedMedReqs[k])
-                            patientData.medicationIDs.push(fetchedMedReqs[k].resource.id)
+                    // MedRequests z referencją na danego pacjenta
+                    if (fetchedMedReqs !== undefined || fetchedMedReqs.length > 0) {
+                        for (k = 0; k < fetchedMedReqs.length; k++) {
+                            if (fetchedMedReqs[k].resource.subject.reference === ("Patient/" + patientData.id) && fetchedMedReqs[k].resource.status !== "cancelled") {
+                                patientData.medications.push(fetchedMedReqs[k])
+                                patientData.medicationIDs.push(fetchedMedReqs[k].resource.id) //ID recept ("active") na serwerze
+                            }
                         }
                     }
-                    if (fetchedComms !== undefined || fetchedComms.length > 0) {
-                        for (l = 0; l < fetchedComms.length; l++) {
-                            for (let n=0; n<fetchedComms[l].resource.payload.length; n++) {
-                                if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[n].contentReference.identifier.value) && fetchedComms[l].resource.payload[n].contentReference.type === "MedicationRequest") {
-                                    patientData.communications.push(fetchedComms[l].resource.payload[n].contentReference.identifier.value)
-                                    patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[n].contentReference.identifier.value])
-                                }
+
+                    // MedRequests 
+                    if (fetchedStopped !== undefined || fetchedStopped.length > 0) {
+                        for (m = 0; m < fetchedStopped.length; m++) {
+                            if (fetchedStopped[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedStopped[m].resource.status !== "cancelled") {
+                                patientData.stopped.push(fetchedStopped[m])
+                                patientData.medicationIDs.push(fetchedStopped[m].resource.id)
                             }
                         }
                     }
 
                     if (fetchedDrafts !== undefined || fetchedDrafts.length > 0) {
                         for (m = 0; m < fetchedDrafts.length; m++) {
-                            if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "canceled") {
+                            if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "cancelled") {
                                 patientData.drafts.push(fetchedDrafts[m])
+                                patientData.medicationIDs.push(fetchedDrafts[m].resource.id)
                             }
                         }
                     }
+
+                    if (fetchedComms !== undefined || fetchedComms.length > 0) {
+                        for (l = 0; l < fetchedComms.length; l++) {
+                            for (let n=0; n<fetchedComms[l].resource.payload.length; n++) {
+                                if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[n].contentReference.identifier.value) && fetchedComms[l].resource.payload[n].contentReference.type === "MedicationRequest") {
+                                    // patientData.communications.push(fetchedComms[l].resource.payload[n].contentReference.identifier.value) // na które MedRequests ma referencje (ich ID)
+                                    patientData.communications.push(fetchedComms[l])
+                                    patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[n].contentReference.identifier.value])
+                                }
+                            }
+                        }
+                    }
+
+                    // if (fetchedDrafts !== undefined || fetchedDrafts.length > 0) {
+                    //     for (m = 0; m < fetchedDrafts.length; m++) {
+                    //         if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "cancelled") {
+                    //             patientData.drafts.push(fetchedDrafts[m])
+                    //         }
+                    //     }
+                    // }
+
+                    // if (fetchedStopped !== undefined || fetchedStopped.length > 0) {
+                    //     for (m = 0; m < fetchedStopped.length; m++) {
+                    //         if (fetchedStopped[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedStopped[m].resource.status !== "cancelled") {
+                    //             patientData.stopped.push(fetchedStopped[m])
+                    //         }
+                    //     }
+                    // }
 
                     if (patientData.communications.length !== 0) {
                         patientData.status = status_x
@@ -527,6 +578,7 @@ export default function Patients() {
                             comms={prescData.communications}
                             commIDs={prescData.communicationIDs}
                             drafts={prescData.drafts}
+                            stopped={prescData.stopped}
                             patientRef={prescData}
                         />
                     }

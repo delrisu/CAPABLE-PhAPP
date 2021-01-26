@@ -46,11 +46,24 @@ const columns = [
     }
 ]
 
-export default function Prescriptions({client, data, comms, commIDs, drafts, show, onHide, patientRef}) {
+export default function Prescriptions({client, data, comms, commIDs, drafts, stopped, show, onHide, patientRef}) {
     const [prescEditShow, setPrescEditShow] = useState(false);
     const [prescFormEditData, setPrescFormEditData] = useState({});
     const [prescNewShow, setPrescNewShow] = useState(false);
     // const [prescFormEditData, setPrescFormEditData] = useState({});
+    console.log("Stopped medReqs:")
+    console.log(stopped)
+    function checkStatus(medID) {
+        let result = true
+        stopped.forEach(element => {
+            if (element.resource.priorPrescription.identifier.value === medID) {
+                console.log("Pasuje do leku")
+                result = false;
+            }
+        });
+        return result;
+    }
+
     function convertRowData () {
         let rowData = data;
         let i, j;
@@ -77,24 +90,67 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                 doseValue:      rowData[i].resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
                 doseUnit:       rowData[i].resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
                 dosing:         "",
-                status:         comms.includes(rowData[i].resource.id) ? status_x : status_tick,
+                status:         checkStatus(rowData[i].resource.id) ? status_tick : status_x,
+                // status:         comms.includes(rowData[i].resource.id) ? status_x : status_tick,
                 draft:          null,
-                attachedCommID:   null
+                attachedCommID: null,
+                relatedObjIDs:  [],
+                relatedStopped: null,
+                relatedDraft:   null,
+                relatedComm:    null,
+                json:           rowData[i].resource
             }
 
-            if (drafts !== undefined || drafts.length > 0) {
-                drafts.forEach(element => {
-                    if (medData.medicineCode === element.medicationCodeableConcept.coding[0].code) {
-                        medData.draft = element
-                    }
-                });
-            }
-            if (commIDs !== undefined || drafts.length > 0) {
+
+            // if (drafts !== undefined || drafts.length > 0) {
+            //     drafts.forEach(element => {
+            //         if (medData.medicineCode === element.medicationCodeableConcept.coding[0].code) {
+            //             medData.draft = element
+            //         }
+            //     });
+            // }
+            if (commIDs !== undefined || commIDs.length > 0) {
                 commIDs.forEach(element => {
                     if (element[1] === medData.id) {
                         medData.attachedCommID = element[0]
                     }
                 })
+            }
+
+            if (commIDs !== undefined || commIDs.length > 0) {
+                commIDs.forEach(element => {
+                    if (element[0] === medData.attachedCommID) {
+                        medData.relatedObjIDs.push(element[1])
+                    }
+                });
+            }
+
+            if (stopped !== undefined || stopped.length > 0) {
+                stopped.forEach(element => {
+                    for (let i=0; i<medData.relatedObjIDs.length; i++) {
+                        if (element.resource.id === medData.relatedObjIDs[i]) {
+                            medData.relatedStopped = element
+                        }
+                    }
+                });
+            }
+
+            if (drafts !== undefined || drafts.length > 0) {
+                drafts.forEach(element => {
+                    for (let i=0; i<medData.relatedObjIDs.length; i++) {
+                        if (element.resource.id === medData.relatedObjIDs[i]) {
+                            medData.relatedDraft = element
+                        }
+                    }
+                });
+            }
+
+            if (comms !== undefined || comms.length > 0) {
+                comms.forEach(element => {
+                    if (element.resource.id === medData.attachedCommID) {
+                        medData.relatedComm = element
+                    }
+                });
             }
 
             medData.dosing = medData.frequency + "x " + medData.doseValue + medData.doseUnit + " every " + medData.period + " " + medData.periodUnit;
@@ -124,131 +180,79 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sho
                 <Modal.Body>
                     <MaterialTable
                         columns={columns}
-                        data={medicationsData}
+                        data={medicationsData !== undefined ? medicationsData : null}
                         title=""
                         onRowClick={(event, rowData) => {
                             if (rowData.status === status_x) {
-                                console.log(rowData.draft)
-                                let tempDraft = {
-                                    id:             rowData.draft.resource.id,
-                                    patient:        rowData.draft.resource.subject.reference,
-                                    medicine:       rowData.draft.resource.medicationCodeableConcept.coding[0].display,
-                                    medicineCode:   rowData.draft.resource.medicationCodeableConcept.coding[0].code,
-                                    from:           rowData.draft.resource.dosageInstruction[0].timing.repeat.boundsPeriod.start,
-                                    to:             rowData.draft.resource.dosageInstruction[0].timing.repeat.boundsPeriod.end,
-                                    asNeeded:       rowData.draft.resource.dosageInstruction[0].asNeededBoolean,
-                                    frequency:      rowData.draft.resource.dosageInstruction[0].timing.repeat.frequency,
-                                    period:         rowData.draft.resource.dosageInstruction[0].timing.repeat.period,
-                                    periodUnit:     rowData.draft.resource.dosageInstruction[0].timing.repeat.periodUnit,
-                                    doseValue:      rowData.draft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
-                                    doseUnit:       rowData.draft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
-                                    dosing:         ""
-                                }
-                                tempDraft.dosing = tempDraft.frequency + "x " + tempDraft.doseValue + tempDraft.doseUnit + " every " + tempDraft.period + " " + tempDraft.periodUnit;
-                                let confirmMsg = ''
-                                confirmMsg = rowData.from !== tempDraft.from && confirmMsg.concat(tempDraft.from + '\n')
-                                confirmMsg = rowData.to !== tempDraft.to && confirmMsg.concat(tempDraft.to + '\n')
-                                confirmMsg = rowData.asNeeded !== tempDraft.asNeeded && confirmMsg.concat(tempDraft.asNeeded + '\n')
-                                if (rowData.frequency !== tempDraft.frequency || rowData.period !== tempDraft.period || rowData.periodUnit !== tempDraft.periodUnit || rowData.doseValue !== tempDraft.doseValue || rowData.doseUnit !== tempDraft.doseUnit) {
-                                    confirmMsg = confirmMsg.concat(tempDraft.dosing)
-                                }
-                                // confirmMsg = rowData.frequency !== tempDraft.frequency && confirmMsg.concat(tempDraft.frequency + '\n')
-                                // confirmMsg = rowData.period !== tempDraft.period && confirmMsg.concat(tempDraft.period + '\n')
-                                // confirmMsg = rowData.periodUnit !== tempDraft.periodUnit && confirmMsg.concat(tempDraft.periodUnit + '\n')
-                                // confirmMsg = rowData.doseValue !== tempDraft.doseValue && confirmMsg.concat(tempDraft.doseValue + '\n')
-                                // confirmMsg = rowData.doseUnit !== tempDraft.doseUnit && confirmMsg.concat(tempDraft.to + '\n')
+                                // stopped.forEach(element => {
+                                //     if (rowData.id === element.resource.id) {
 
-                                if (window.confirm('Do you wish to accept these suggested changes?\n' + confirmMsg)) {
-                                    let entryOld = {
-                                        resourceType: "MedicationRequest",
-                                        status: "canceled",
-                                        intent: "order",
-                                        medicationCodeableConcept: {
-                                            coding: [{
-                                                system: "http://snomed.info/sct",
-                                                code: rowData.medicineCode,
-                                                display: rowData.medicine
-                                            }]
-                                        },
-                                        subject: {
-                                            reference: "Patient/" + rowData.patient
-                                        },
-                                        dosageInstruction: [{
-                                            text: rowData.dosing,
-                                            timing: {
-                                                repeat: {
-                                                    boundsPeriod: {
-                                                        start: rowData.from,
-                                                        end: rowData.to
-                                                    },
-                                                    frequency: rowData.frequency,
-                                                    period: rowData.period,
-                                                    periodUnit: rowData.periodUnit
-                                                }
-                                            },
-                                            asNeededBoolean: rowData.asNeeded,
-                                            doseAndRate: [{
-                                                doseQuantity: {
-                                                    value: rowData.doseValue,
-                                                    unit: rowData.doseUnit,
-                                                    system: "http://snomed.info/sct",
-                                                    code: 258684004
-                                                }
-                                            }]
-                                        }]
+                                //     }
+                                // });
+                                // console.log(rowData.draft)
+                                if (rowData.relatedStopped !== undefined && rowData.relatedDraft !== undefined) {
+                                    let tempDraft = {
+                                        id:             rowData.relatedDraft.resource.id,
+                                        patient:        rowData.relatedDraft.resource.subject.reference,
+                                        medicine:       rowData.relatedDraft.resource.medicationCodeableConcept.coding[0].display,
+                                        medicineCode:   rowData.relatedDraft.resource.medicationCodeableConcept.coding[0].code,
+                                        // from:           rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsPeriod.start,
+                                        // to:             rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsPeriod.end,
+                                        dosageText:     rowData.relatedDraft.resource.dosageInstruction[0].text,
+                                        boundValue:     rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsDuration.value,
+                                        boundUnit:      rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsDuration.unit,
+                                        asNeeded:       rowData.relatedDraft.resource.dosageInstruction[0].asNeededBoolean,
+                                        frequency:      rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.frequency,
+                                        period:         rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.period,
+                                        periodUnit:     rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.periodUnit,
+                                        doseValue:      rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
+                                        doseUnit:       rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
+                                        dosing:         ""
                                     }
-                                    client.update({resourceType: 'MedicationRequest', id: rowData.id, body: entryOld})
+                                    tempDraft.dosing = tempDraft.frequency + "x " + tempDraft.doseValue + tempDraft.doseUnit + " every " + tempDraft.period + " " + tempDraft.periodUnit;
+                                    let confirmMsg = 'Prescribe ' + tempDraft.medicine + '\n'
+                                    confirmMsg = confirmMsg + 'Dosing: ' + tempDraft.dosageText + '\n'
+                                    confirmMsg = confirmMsg + 'For the next: ' + tempDraft.boundValue + ' ' + tempDraft.boundUnit + '(s)'
+                                    if (window.confirm('Do you wish to apply the suggestion below?\n' + confirmMsg)) {
+                                        let modifiedDraftBody = rowData.relatedDraft
+                                        modifiedDraftBody.status = "active"
+                                        modifiedDraftBody.intent = "order"
+                                        // = {
+                                        //     "resourceType": "MedicationRequest",
+                                        //     "status": "active",
+                                        //     "intent": "order"
+                                        // }
+                                        client.update({ resourceType: 'MedicationRequest', id: tempDraft.id, body: modifiedDraftBody})
 
-                                    let entryNew = {
-                                        resourceType: "MedicationRequest",
-                                        status: "active",
-                                        intent: "order",
-                                        medicationCodeableConcept: {
-                                            coding: [{
-                                                system: "http://snomed.info/sct",
-                                                code: tempDraft.medicineCode,
-                                                display: tempDraft.medicine
-                                            }]
-                                        },
-                                        subject: {
-                                            reference: "Patient/" + tempDraft.patient
-                                        },
-                                        dosageInstruction: [{
-                                            text: tempDraft.dosing,
-                                            timing: {
-                                                repeat: {
-                                                    boundsPeriod: {
-                                                        start: tempDraft.from,
-                                                        end: tempDraft.to
-                                                    },
-                                                    frequency: tempDraft.frequency,
-                                                    period: tempDraft.period,
-                                                    periodUnit: tempDraft.periodUnit
-                                                }
-                                            },
-                                            asNeededBoolean: tempDraft.asNeeded,
-                                            doseAndRate: [{
-                                                doseQuantity: {
-                                                    value: tempDraft.doseValue,
-                                                    unit: tempDraft.doseUnit,
-                                                    system: "http://snomed.info/sct",
-                                                    code: 258684004
-                                                }
-                                            }]
-                                        }]
-                                    }
-                                    client.update({resourceType: 'MedicationRequest', id: rowData.id, body: entryNew})
+                                        if (window.confirm('(Regarding the previous suggestion)\nDo you wish to cancel prescription of ' + rowData.medicine + '?')) {
+                                            let modifiedOriginalBody = rowData.json
+                                            modifiedOriginalBody.status = "stopped"
+                                            // = {
+                                            //     "resourceType": "MedicationRequest",
+                                            //     "status": "stopped"
+                                            // }
+                                            client.update({ resourceType: 'MedicationRequest', id: rowData.id, body: modifiedOriginalBody})
+                                        }
 
-                                    let entryComm = {
-                                        resourceType: "Communication",
-                                        status: "in-progress"
+                                        let modifiedCommBody = rowData.relatedComm
+                                        modifiedCommBody.status = "in-progress"
+                                        client.update({ resourceType: 'Communication', id: rowData.attachedCommID, body: modifiedCommBody})
                                     }
-                                    client.update({resourceType: 'Communication', id: rowData.attachedCommID, body: entryComm})
-                                    window.location.reload(false);
+                                    else {
+                                        let modifiedDraftBody = rowData.relatedDraft
+                                        modifiedDraftBody.status = "cancelled"
+                                        modifiedDraftBody.intent = "order"
+                                        // let modifiedDraftBody = {
+                                        //     status: "cancelled"
+                                        // }
+                                        client.update({ resourceType: 'MedicationRequest', id: tempDraft.id, body: modifiedDraftBody})
+
+                                        let modifiedCommBody = rowData.relatedComm
+                                        modifiedCommBody.status = "in-progress"
+                                        client.update({ resourceType: 'Communication', id: rowData.attachedCommID, body: modifiedCommBody})
+                                    }
                                 }
-                                else {
-                                    alert("Rejected suggested changes!")
-                                }
+                                
                             }
                             else {
                                 alert("This prescription does not require any action to be taken!")

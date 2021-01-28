@@ -1,5 +1,5 @@
 import React, { useState, useEffect }  from 'react';
-import { Button }           from 'reactstrap';
+// import { Button }           from 'reactstrap';
 import MaterialTable        from'material-table';
 import Prescriptions        from './Prescriptions';
 import PatientsForm         from './PatientsForm';
@@ -31,8 +31,8 @@ per week:           259038000
 const { FHIRClient } = require('fhir-crud-client');
 
 const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
+// const BASE_URL = 'http://localhost:9000/baseR4/'
 const HEADERS = {
-
         Accept: 'application/json',
     };
 

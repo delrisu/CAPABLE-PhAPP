@@ -1,6 +1,6 @@
 import React                from "react";
 import { NavLink }          from "react-router-dom";
-import { AiOutlineHome }    from "react-icons/ai"
+// import { AiOutlineHome }    from "react-icons/ai"
 import { ImNewspaper }      from "react-icons/im"
 import { BsPeopleFill }     from "react-icons/bs"
 import { CgFileDocument }   from "react-icons/cg"

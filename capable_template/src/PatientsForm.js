@@ -26,8 +26,7 @@ class PatientsForm extends Component {
                 collagenVascular: 0,
                 ibd: 0,
                 gastroOperation: 0,
-                physicalActivity: 'None',
-                additional_info: ""
+                physicalActivity: 'None'
             };
         }
         else {
@@ -579,6 +578,7 @@ class PatientsForm extends Component {
                                 <div className="form-group col-md-2">
                                     <label htmlFor="height">Height [cm]</label>
                                     <input type="number" 
+                                            min="0"
                                             name="height" 
                                             onChange={this.handleChangeBMI}
                                             id="height"
@@ -588,6 +588,7 @@ class PatientsForm extends Component {
                                 <div className="form-group col-md-2">
                                     <label htmlFor="weight">Weight [kg]</label>
                                     <input type="number"
+                                            min="0"
                                             name="weight" 
                                             onChange={this.handleChangeBMI}
                                             id="weight"
@@ -697,7 +698,8 @@ class PatientsForm extends Component {
                                 </div>
                                 <div className="form-group col-md-4">
                                     <label htmlFor="yearsSmoking">Years as a smoker</label>
-                                    <input type="number" 
+                                    <input type="number"
+                                            min="0"
                                             name="yearsSmoking" 
                                             onChange={this.handleChange}
                                             id="yearsSmoking"
@@ -707,22 +709,12 @@ class PatientsForm extends Component {
                                 <div className="form-group col-md-4">
                                     <label htmlFor="yearsDrinking">Years as a drinker</label>
                                     <input type="number"
+                                            min="0"
                                             name="yearsDrinking" 
                                             onChange={this.handleChange}
                                             id="yearsDrinking"
                                             className="form-control"
                                     />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group col-md-12">
-                                <label htmlFor="additional_info">Additional info</label>
-                                    <textarea
-                                            name="additional_info" 
-                                            onChange={this.handleChange}
-                                            id="additional_info"
-                                            className="form-control textarea"
-                                        ></textarea>
                                 </div>
                             </div>   
                         </div>
@@ -954,18 +946,7 @@ class PatientsForm extends Component {
                                             value={this.state.yearsDrinking}
                                     />
                                 </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-group col-md-12">
-                                <label htmlFor="additional_info">Additional info</label>
-                                    <textarea
-                                            name="additional_info" 
-                                            onChange={this.handleChange}
-                                            id="additional_info"
-                                            className="form-control textarea"
-                                        ></textarea>
-                                </div>
-                            </div>   
+                            </div>  
                         </div>
                     </Carousel.Item>
                 </Carousel>

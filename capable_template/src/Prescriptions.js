@@ -51,16 +51,29 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
     const [prescFormEditData, setPrescFormEditData] = useState({});
     const [prescNewShow, setPrescNewShow] = useState(false);
     // const [prescFormEditData, setPrescFormEditData] = useState({});
+    console.log("comms:")
+    console.log(comms)
+    console.log("commIDs")
+    console.log(commIDs)
+    console.log("drafts:")
+    console.log(drafts)
     console.log("Stopped medReqs:")
     console.log(stopped)
-    function checkStatus(medID) {
+    function checkStatus(medID, commID) {
         let result = true
-        stopped.forEach(element => {
-            if (element.resource.priorPrescription.identifier.value === medID) {
-                console.log("Pasuje do leku")
-                result = false;
-            }
-        });
+        if (stopped !== undefined && stopped.length > 0 && comms.length > 0) {
+            stopped.forEach(element => {
+                if (element.resource.priorPrescription.identifier.value === medID) {
+                    comms.forEach(element2 => {
+                        if (element2.resource.id === commID)
+                        result = false;
+                        console.log("Pasuje do leku " + element.resource.id.toString())
+                        console.log(element)
+                    });
+                    
+                }
+            });
+        }
         return result;
     }
 
@@ -84,13 +97,13 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                 from:           rowData[i].resource.dosageInstruction[0].timing.repeat.boundsPeriod.start,
                 to:             rowData[i].resource.dosageInstruction[0].timing.repeat.boundsPeriod.end,
                 asNeeded:       rowData[i].resource.dosageInstruction[0].asNeededBoolean,
-                frequency:      rowData[i].resource.dosageInstruction[0].timing.repeat.frequency,
-                period:         rowData[i].resource.dosageInstruction[0].timing.repeat.period,
-                periodUnit:     rowData[i].resource.dosageInstruction[0].timing.repeat.periodUnit,
+                // frequency:      rowData[i].resource.dosageInstruction[0].timing.repeat.frequency,
+                // period:         rowData[i].resource.dosageInstruction[0].timing.repeat.period,
+                // periodUnit:     rowData[i].resource.dosageInstruction[0].timing.repeat.periodUnit,
                 doseValue:      rowData[i].resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
                 doseUnit:       rowData[i].resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
-                dosing:         "",
-                status:         checkStatus(rowData[i].resource.id) ? status_tick : status_x,
+                dosing:         rowData[i].resource.dosageInstruction[0].text,
+                status:         null,//checkStatus(rowData[i].resource.id) ? status_tick : status_x,
                 // status:         comms.includes(rowData[i].resource.id) ? status_x : status_tick,
                 draft:          null,
                 attachedCommID: null,
@@ -109,15 +122,28 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
             //         }
             //     });
             // }
-            if (commIDs !== undefined || commIDs.length > 0) {
-                commIDs.forEach(element => {
-                    if (element[1] === medData.id) {
-                        medData.attachedCommID = element[0]
+            if (stopped !== undefined && stopped.length > 0 && comms.length > 0) {
+                stopped.forEach(element => {
+                    if (element.resource.priorPrescription.identifier.value === medData.id) {
+                        commIDs.forEach(element2 => {
+                            if (element2[1] === element.resource.id) {
+                                medData.attachedCommID = element2[0]
+                            }
+                        });
+                        
                     }
                 })
             }
-
-            if (commIDs !== undefined || commIDs.length > 0) {
+            // if (commIDs !== undefined || commIDs.length > 0) {
+            //     commIDs.forEach(element => {
+            //         if (element[1] === medData.id) {
+            //             medData.attachedCommID = element[0]
+            //         }
+            //     })
+            // }
+            console.log("attached comm id:")
+            console.log(medData.attachedCommID)
+            if (commIDs !== undefined && commIDs.length > 0) {
                 commIDs.forEach(element => {
                     if (element[0] === medData.attachedCommID) {
                         medData.relatedObjIDs.push(element[1])
@@ -125,7 +151,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                 });
             }
 
-            if (stopped !== undefined || stopped.length > 0) {
+            if (stopped !== undefined && stopped.length > 0) {
                 stopped.forEach(element => {
                     for (let i=0; i<medData.relatedObjIDs.length; i++) {
                         if (element.resource.id === medData.relatedObjIDs[i]) {
@@ -134,8 +160,10 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                     }
                 });
             }
-
-            if (drafts !== undefined || drafts.length > 0) {
+            console.log("related stopped")
+            console.log(medData.relatedStopped)
+            console.log('-------')
+            if (drafts !== undefined && drafts.length > 0) {
                 drafts.forEach(element => {
                     for (let i=0; i<medData.relatedObjIDs.length; i++) {
                         if (element.resource.id === medData.relatedObjIDs[i]) {
@@ -144,8 +172,10 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                     }
                 });
             }
+            console.log("related draft")
+            console.log(medData.relatedDraft)
 
-            if (comms !== undefined || comms.length > 0) {
+            if (comms !== undefined && comms.length > 0) {
                 comms.forEach(element => {
                     if (element.resource.id === medData.attachedCommID) {
                         medData.relatedComm = element
@@ -153,7 +183,9 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                 });
             }
 
-            medData.dosing = medData.frequency + "x " + medData.doseValue + medData.doseUnit + " every " + medData.period + " " + medData.periodUnit;
+            medData.status = checkStatus(medData.id, medData.attachedCommID) ? status_tick : status_x
+
+            // medData.dosing = medData.frequency + "x " + medData.doseValue + medData.doseUnit + " every " + medData.period + " " + medData.periodUnit;
             medications.push(medData);
         }
         return medications;
@@ -183,6 +215,30 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                         data={medicationsData !== undefined ? medicationsData : null}
                         title=""
                         onRowClick={(event, rowData) => {
+                            function convertToDates(value, unit) {
+                                let returnDates = []
+                                let today = new Date();
+                                let dd = String(today.getDate()).padStart(2, '0');
+                                let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                                let yyyy = today.getFullYear();
+
+                                returnDates.push(yyyy + '-' + mm + '-' + dd)
+                                if (unit === "wk") {
+                                    today.setDate(today.getDate()+(7*value))
+                                    dd = String(today.getDate()).padStart(2, '0');
+                                    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                                    yyyy = today.getFullYear();
+                                    returnDates.push(yyyy + '-' + mm + '-' + dd)
+                                } 
+                                else if (unit === "d") {
+                                    today.setDate(today.getDate()+value)
+                                    dd = String(today.getDate()).padStart(2, '0');
+                                    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                                    yyyy = today.getFullYear();
+                                    returnDates.push(yyyy + '-' + mm + '-' + dd)
+                                }
+                                return returnDates
+                            }
                             if (rowData.status === status_x) {
                                 // stopped.forEach(element => {
                                 //     if (rowData.id === element.resource.id) {
@@ -202,21 +258,35 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                                         boundValue:     rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsDuration.value,
                                         boundUnit:      rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.boundsDuration.unit,
                                         asNeeded:       rowData.relatedDraft.resource.dosageInstruction[0].asNeededBoolean,
-                                        frequency:      rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.frequency,
-                                        period:         rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.period,
-                                        periodUnit:     rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.periodUnit,
-                                        doseValue:      rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
-                                        doseUnit:       rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
-                                        dosing:         ""
+                                        // frequency:      rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.frequency,
+                                        // period:         rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.period,
+                                        // periodUnit:     rowData.relatedDraft.resource.dosageInstruction[0].timing.repeat.periodUnit,
+                                        // doseValue:      rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.value,
+                                        // doseUnit:       rowData.relatedDraft.resource.dosageInstruction[0].doseAndRate[0].doseQuantity.unit,
+                                        // dosing:         rowData.relatedComm.resource.dosageInstruction[0].text
                                     }
-                                    tempDraft.dosing = tempDraft.frequency + "x " + tempDraft.doseValue + tempDraft.doseUnit + " every " + tempDraft.period + " " + tempDraft.periodUnit;
+                                    // tempDraft.dosing = tempDraft.frequency + "x " + tempDraft.doseValue + tempDraft.doseUnit + " every " + tempDraft.period + " " + tempDraft.periodUnit;
+                                    let expectedDates = convertToDates(tempDraft.boundValue, tempDraft.boundUnit)
                                     let confirmMsg = 'Prescribe ' + tempDraft.medicine + '\n'
                                     confirmMsg = confirmMsg + 'Dosing: ' + tempDraft.dosageText + '\n'
-                                    confirmMsg = confirmMsg + 'For the next: ' + tempDraft.boundValue + ' ' + tempDraft.boundUnit + '(s)'
+                                    confirmMsg = confirmMsg + 'When: from ' + expectedDates[0] + ' to ' + expectedDates[1]
                                     if (window.confirm('Do you wish to apply the suggestion below?\n' + confirmMsg)) {
-                                        let modifiedDraftBody = rowData.relatedDraft
+                                        let modifiedDraftBody = rowData.relatedDraft.resource
                                         modifiedDraftBody.status = "active"
                                         modifiedDraftBody.intent = "order"
+                                        delete modifiedDraftBody.dosageInstruction[0].timing.repeat.boundsDuration
+                                        delete modifiedDraftBody.meta
+                                        
+                                        let freq = modifiedDraftBody.dosageInstruction[0].timing.repeat.frequency
+                                        let period = modifiedDraftBody.dosageInstruction[0].timing.repeat.period
+                                        let periodUnit = modifiedDraftBody.dosageInstruction[0].timing.repeat.periodUnit
+                                        let boundsPeriod = {boundsPeriod: {start: expectedDates[0], end: expectedDates[1]}}
+                                        console.log("frequency: " + freq.toString() + "-- period: " + period.toString() + "-- periodUnit: " + periodUnit.toString())
+                                        console.log(boundsPeriod)
+
+                                        modifiedDraftBody.dosageInstruction[0].timing.repeat = {...boundsPeriod, freq, period, periodUnit}
+                                        // modifiedDraftBody.dosageInstruction[0].timing.repeat.boundsPeriod = {from: expectedDates[0], to: expectedDates[1]}
+                                        console.log(modifiedDraftBody)
                                         // = {
                                         //     "resourceType": "MedicationRequest",
                                         //     "status": "active",
@@ -227,6 +297,7 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                                         if (window.confirm('(Regarding the previous suggestion)\nDo you wish to cancel prescription of ' + rowData.medicine + '?')) {
                                             let modifiedOriginalBody = rowData.json
                                             modifiedOriginalBody.status = "stopped"
+                                            delete modifiedOriginalBody.meta
                                             // = {
                                             //     "resourceType": "MedicationRequest",
                                             //     "status": "stopped"
@@ -234,24 +305,28 @@ export default function Prescriptions({client, data, comms, commIDs, drafts, sto
                                             client.update({ resourceType: 'MedicationRequest', id: rowData.id, body: modifiedOriginalBody})
                                         }
 
-                                        let modifiedCommBody = rowData.relatedComm
+                                        let modifiedCommBody = rowData.relatedComm.resource
                                         modifiedCommBody.status = "in-progress"
+                                        delete modifiedCommBody.meta
                                         client.update({ resourceType: 'Communication', id: rowData.attachedCommID, body: modifiedCommBody})
                                     }
                                     else {
-                                        let modifiedDraftBody = rowData.relatedDraft
+                                        let modifiedDraftBody = rowData.relatedDraft.resource
                                         modifiedDraftBody.status = "cancelled"
                                         modifiedDraftBody.intent = "order"
+                                        delete modifiedDraftBody.meta
                                         // let modifiedDraftBody = {
                                         //     status: "cancelled"
                                         // }
                                         client.update({ resourceType: 'MedicationRequest', id: tempDraft.id, body: modifiedDraftBody})
 
-                                        let modifiedCommBody = rowData.relatedComm
+                                        let modifiedCommBody = rowData.relatedComm.resource
                                         modifiedCommBody.status = "in-progress"
+                                        delete modifiedCommBody.meta
                                         client.update({ resourceType: 'Communication', id: rowData.attachedCommID, body: modifiedCommBody})
                                     }
                                 }
+                                window.location.reload(false);
                                 
                             }
                             else {

@@ -4,7 +4,6 @@ import Navbar                                       from "./Navbar";
 import Dashboard                                    from "./Dashboard";
 import Patients                                     from "./Patients";
 import Documentation                                from "./Documentation";
-// import Home                                         from "./Home";
 import "./styles.css";
 
 export default function App() {
@@ -16,7 +15,6 @@ export default function App() {
             </div>
             <div className="content">
                 <Redirect exact from="/" to="/Patients" />
-                {/* <Route component={Patients} path="/Patients" /> */}
                 <Route component={Dashboard} path="/Dashboard" />
                 <Route component={Patients} path="/Patients" />
                 <Route component={Documentation} path="/Documentation" />

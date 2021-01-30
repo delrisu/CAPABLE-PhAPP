@@ -11,7 +11,7 @@ class PrescriptionForm extends Component {
         if (this.props.data === false) {
             this.state = {
                 id:             '',
-                patient:        this.props.patient, //this.props.data
+                patient:        this.props.patient,
                 medicine:       '',
                 medicineCode:   '',
                 from:           '',
@@ -145,7 +145,6 @@ class PrescriptionForm extends Component {
                     }]
                 }]
         }
-        // console.log(this.props.client)
         let response = await this.props.client.create({resourceType: "MedicationRequest", body: entry})
             .then((resource) => {
                 let entryComm = {
@@ -220,7 +219,6 @@ class PrescriptionForm extends Component {
                 }]
             }]
     }
-    // console.log(this.props.client)
     let response = await this.props.client.update({resourceType: "MedicationRequest", id: this.state.id, body: entry})
     }
 
@@ -233,7 +231,6 @@ class PrescriptionForm extends Component {
             console.log(this.state)
             return (
                 <Modal
-                    //{...this.props}
                     size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered

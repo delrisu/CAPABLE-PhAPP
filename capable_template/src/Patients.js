@@ -30,8 +30,8 @@ per week:           259038000
 
 const { FHIRClient } = require('fhir-crud-client');
 
-const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
-// const BASE_URL = 'http://localhost:9000/baseR4/'
+// const BASE_URL = 'http://10.131.46.196:8080/baseR4/';
+const BASE_URL = 'http://localhost:9000/baseR4/'
 const HEADERS = {
         Accept: 'application/json',
     };
@@ -169,7 +169,6 @@ export default function Patients() {
     const [prescData, setPrescData] = useState({});
     const [patientCardShow, setPatientCardShow] = useState(false);
     const [patientCardData, setPatientCardData] = useState({});
-    // const [patientID, setPatientID] = useState("");
 
     useEffect(() => {
         async function getData() {
@@ -438,6 +437,7 @@ export default function Patients() {
                             if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "cancelled") {
                                 patientData.drafts.push(fetchedDrafts[m])
                                 patientData.medicationIDs.push(fetchedDrafts[m].resource.id)
+                                patientData.medications.push(fetchedDrafts[m])
                             }
                         }
                     }
@@ -446,29 +446,12 @@ export default function Patients() {
                         for (l = 0; l < fetchedComms.length; l++) {
                             for (let n=0; n<fetchedComms[l].resource.payload.length; n++) {
                                 if (patientData.medicationIDs.includes(fetchedComms[l].resource.payload[n].contentReference.identifier.value) && fetchedComms[l].resource.payload[n].contentReference.type === "MedicationRequest") {
-                                    // patientData.communications.push(fetchedComms[l].resource.payload[n].contentReference.identifier.value) // na które MedRequests ma referencje (ich ID)
                                     patientData.communications.push(fetchedComms[l])
                                     patientData.communicationIDs.push([fetchedComms[l].resource.id, fetchedComms[l].resource.payload[n].contentReference.identifier.value])
                                 }
                             }
                         }
                     }
-
-                    // if (fetchedDrafts !== undefined || fetchedDrafts.length > 0) {
-                    //     for (m = 0; m < fetchedDrafts.length; m++) {
-                    //         if (fetchedDrafts[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedDrafts[m].resource.status !== "cancelled") {
-                    //             patientData.drafts.push(fetchedDrafts[m])
-                    //         }
-                    //     }
-                    // }
-
-                    // if (fetchedStopped !== undefined || fetchedStopped.length > 0) {
-                    //     for (m = 0; m < fetchedStopped.length; m++) {
-                    //         if (fetchedStopped[m].resource.subject.reference === ("Patient/" + patientData.id) && fetchedStopped[m].resource.status !== "cancelled") {
-                    //             patientData.stopped.push(fetchedStopped[m])
-                    //         }
-                    //     }
-                    // }
 
                     if (patientData.communications.length !== 0) {
                         patientData.status = status_x
@@ -478,7 +461,7 @@ export default function Patients() {
                     }
                     patients.push(patientData);
                 }
-                // console.log(patients)
+
                 setPatientsData(patients)
             }
         }
@@ -490,17 +473,6 @@ export default function Patients() {
                 {console.log(patientsData)}
                 <h1><span className="badge badge-dark">Patients</span></h1>
                 <div className="content-patients">
-                {/* <div className="content-whiteboard">
-                    <div className="patients-top-bar">
-                        <div className="patients-top-bar-left">
-                        
-                        </div>
-                        <div className="patients-top-bar-right">
-                            <Button color="primary" onClick={() => setModalShow(true)}>
-                                + Add a new patient
-                            </Button>
-                        </div>
-                    </div> */}
                     <MaterialTable
                         columns={columns}
                         data={patientsData!== undefined ? patientsData : null}
@@ -539,10 +511,7 @@ export default function Patients() {
                                 tooltip: 'Prescriptions',
                                 onClick: (event, rowData) => {
                                     setPrescShow(true);
-                                    // console.log(rowData.medications);
                                     setPrescData(rowData);
-                                    // setPatientID(rowData.id);
-                                    // console.log(patientID);
                                 }
                             }
                         ]}

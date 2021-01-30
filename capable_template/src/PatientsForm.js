@@ -153,9 +153,7 @@ class PatientsForm extends Component {
             }
         }
 
-        // let tmpString = effDate.toString()
-
-        // dateString = dateString + tmpString.substr(tmpString.length-4, tmpString.length-2) + ':' + tmpString.substr(tmpString.length-1,tmpString.length)
+       
         if (valCode === 0) {
             return {
                 resourceType: "Observation",
@@ -361,9 +359,6 @@ class PatientsForm extends Component {
 
         let resource = await this.props.client.create({resourceType: "Patient", body: entry})
 
-        // let entryPatient = this.createCommunication("Patient", resource.id, null);
-        // this.props.client.create({resourceType: "Communication", body: entryPatient});
-
         let entryObs = this.createObservation(this.codes.height, this.state.height, resource.id, this.codes.cm, "Body height measure", "Centimeter");
         await this.props.client.create({resourceType: "Observation", body: entryObs}) // height
             .then((resource2) => {
@@ -516,7 +511,6 @@ class PatientsForm extends Component {
         if (this.props.data === false) {
             return (
                 <Modal
-                    //{...this.props}
                     size="lg"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
